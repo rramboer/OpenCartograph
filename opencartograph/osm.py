@@ -14,6 +14,8 @@ import osmnx as ox
 from geopandas import GeoDataFrame
 from networkx import MultiDiGraph
 
+import requests
+
 from . import constants
 from .cache import CacheError, cache_get, cache_set
 from .models import Coordinates
@@ -58,8 +60,13 @@ def fetch_graph(point: Coordinates, dist: int) -> MultiDiGraph | None:
         except CacheError as e:
             print(e)
         return g
-    except Exception as e:
-        print(f"OSMnx error while fetching graph: {e}")
+    except (
+        ox.InsufficientResponseError,
+        ox.ResponseStatusCodeError,
+        requests.RequestException,
+        ValueError,
+    ) as e:
+        print(f"Could not fetch street network: {e}")
         return None
 
 
@@ -97,6 +104,11 @@ def fetch_features(
         except CacheError as e:
             print(e)
         return data
-    except Exception as e:
-        print(f"OSMnx error while fetching features: {e}")
+    except (
+        ox.InsufficientResponseError,
+        ox.ResponseStatusCodeError,
+        requests.RequestException,
+        ValueError,
+    ) as e:
+        print(f"Could not fetch {name}: {e}")
         return None

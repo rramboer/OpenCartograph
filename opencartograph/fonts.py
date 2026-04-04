@@ -46,89 +46,89 @@ def download_google_font(
 
     font_files: dict[str, str] = {}
 
+    # Google Fonts API endpoint - request all weights at once
+    weights_str = ";".join(map(str, weights))
+    api_url = "https://fonts.googleapis.com/css2"
+
+    params = {"family": f"{font_family}:wght@{weights_str}"}
+    headers = {
+        "User-Agent": "Mozilla/5.0"  # Browser-like UA so Google Fonts returns woff2
+    }
+
     try:
-        # Google Fonts API endpoint - request all weights at once
-        weights_str = ";".join(map(str, weights))
-        api_url = "https://fonts.googleapis.com/css2"
-
-        params = {"family": f"{font_family}:wght@{weights_str}"}
-        headers = {
-            "User-Agent": "Mozilla/5.0"  # Get .woff2 files (better compression)
-        }
-
         response = requests.get(api_url, params=params, headers=headers, timeout=10)
         response.raise_for_status()
-        css_content = response.text
-
-        # Parse CSS to extract weight-specific URLs
-        weight_url_map: dict[int, str] = {}
-        font_face_blocks = re.split(r"@font-face\s*\{", css_content)
-
-        for block in font_face_blocks[1:]:  # Skip first empty split
-            weight_match = re.search(r"font-weight:\s*(\d+)", block)
-            if not weight_match:
-                continue
-
-            weight = int(weight_match.group(1))
-
-            url_match = re.search(r"url\((https://[^)]+\.(woff2|ttf))\)", block)
-            if url_match:
-                weight_url_map[weight] = url_match.group(1)
-
-        # Download each weight
-        for weight in weights:
-            weight_key = WEIGHT_NAMES.get(weight, "regular")
-
-            weight_url = weight_url_map.get(weight)
-
-            # If exact weight not found, try closest
-            if not weight_url and weight_url_map:
-                closest_weight = min(
-                    weight_url_map.keys(), key=lambda x: abs(x - weight)
-                )
-                weight_url = weight_url_map[closest_weight]
-                print(
-                    f"  Using weight {closest_weight} for {weight_key} "
-                    f"(requested {weight} not available)"
-                )
-
-            if weight_url:
-                file_ext = "woff2" if weight_url.endswith(".woff2") else "ttf"
-                font_filename = f"{font_name_safe}_{weight_key}.{file_ext}"
-                font_path = constants.FONTS_CACHE_DIR / font_filename
-
-                if not font_path.exists():
-                    print(f"  Downloading {font_family} {weight_key} ({weight})...")
-                    try:
-                        font_response = requests.get(weight_url, timeout=10)
-                        font_response.raise_for_status()
-                        font_path.write_bytes(font_response.content)
-                    except Exception as e:
-                        print(f"  \u26a0 Failed to download {weight_key}: {e}")
-                        continue
-                else:
-                    print(f"  Using cached {font_family} {weight_key}")
-
-                font_files[weight_key] = str(font_path)
-
-        # Ensure we have at least regular weight
-        if "regular" not in font_files and font_files:
-            font_files["regular"] = list(font_files.values())[0]
-            print(f"  Using {list(font_files.keys())[0]} weight as regular")
-
-        # If we don't have all three weights, duplicate available ones
-        if "bold" not in font_files and "regular" in font_files:
-            font_files["bold"] = font_files["regular"]
-            print("  Using regular weight as bold")
-        if "light" not in font_files and "regular" in font_files:
-            font_files["light"] = font_files["regular"]
-            print("  Using regular weight as light")
-
-        return font_files if font_files else None
-
-    except Exception as e:
-        print(f"\u26a0 Error downloading Google Font '{font_family}': {e}")
+    except requests.RequestException as e:
+        print(f"\u26a0 Could not reach Google Fonts API for '{font_family}': {e}")
         return None
+
+    css_content = response.text
+
+    # Parse CSS to extract weight-specific URLs
+    weight_url_map: dict[int, str] = {}
+    font_face_blocks = re.split(r"@font-face\s*\{", css_content)
+
+    for block in font_face_blocks[1:]:  # Skip first empty split
+        weight_match = re.search(r"font-weight:\s*(\d+)", block)
+        if not weight_match:
+            continue
+
+        weight = int(weight_match.group(1))
+
+        url_match = re.search(r"url\((https://[^)]+\.(woff2|ttf))\)", block)
+        if url_match:
+            weight_url_map[weight] = url_match.group(1)
+
+    # Download each weight
+    for weight in weights:
+        weight_key = WEIGHT_NAMES.get(weight, "regular")
+
+        weight_url = weight_url_map.get(weight)
+
+        # If exact weight not found, try closest
+        if not weight_url and weight_url_map:
+            closest_weight = min(
+                weight_url_map.keys(), key=lambda x: abs(x - weight)
+            )
+            weight_url = weight_url_map[closest_weight]
+            print(
+                f"  Using weight {closest_weight} for {weight_key} "
+                f"(requested {weight} not available)"
+            )
+
+        if weight_url:
+            file_ext = "woff2" if weight_url.endswith(".woff2") else "ttf"
+            font_filename = f"{font_name_safe}_{weight_key}.{file_ext}"
+            font_path = constants.FONTS_CACHE_DIR / font_filename
+
+            if not font_path.exists():
+                print(f"  Downloading {font_family} {weight_key} ({weight})...")
+                try:
+                    font_response = requests.get(weight_url, timeout=10)
+                    font_response.raise_for_status()
+                    font_path.write_bytes(font_response.content)
+                except requests.RequestException as e:
+                    print(f"  \u26a0 Failed to download {weight_key}: {e}")
+                    continue
+            else:
+                print(f"  Using cached {font_family} {weight_key}")
+
+            font_files[weight_key] = str(font_path)
+
+    # Ensure we have at least regular weight
+    if "regular" not in font_files and font_files:
+        font_files["regular"] = list(font_files.values())[0]
+        print(f"  Using {list(font_files.keys())[0]} weight as regular")
+
+    # If we don't have all three weights, duplicate available ones
+    if "bold" not in font_files and "regular" in font_files:
+        font_files["bold"] = font_files["regular"]
+        print("  Using regular weight as bold")
+    if "light" not in font_files and "regular" in font_files:
+        font_files["light"] = font_files["regular"]
+        print("  Using regular weight as light")
+
+    return font_files if font_files else None
 
 
 def load_fonts(font_family: str | None = None) -> FontSet | None:

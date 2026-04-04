@@ -66,6 +66,16 @@ class TestBuildParser:
         with pytest.raises(SystemExit):
             parser.parse_args(["-c", "X", "-C", "Y", "-f", "bmp"])
 
+    def test_no_text_flag(self):
+        parser = build_parser()
+        args = parser.parse_args(["-c", "X", "-C", "Y", "--no-text"])
+        assert args.no_text is True
+
+    def test_no_text_default_false(self):
+        parser = build_parser()
+        args = parser.parse_args(["-c", "X", "-C", "Y"])
+        assert args.no_text is False
+
     def test_latitude_longitude(self):
         parser = build_parser()
         args = parser.parse_args([

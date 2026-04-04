@@ -46,7 +46,8 @@ def _render_polygon_layer(
         return
     try:
         polys = ox.projection.project_gdf(polys)
-    except Exception:
+    except (ValueError, RuntimeError) as e:
+        print(f"  Warning: GDF projection failed ({e}), using graph CRS fallback")
         polys = polys.to_crs(crs)
     polys.plot(ax=ax, facecolor=facecolor, edgecolor="none", zorder=zorder)
 

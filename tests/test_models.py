@@ -91,3 +91,9 @@ class TestPosterConfig:
         assert sample_config.center.latitude == 48.8566
         assert sample_config.theme.name == "Test Theme"
         assert sample_config.output_format == "png"
+        assert sample_config.no_text is False
+
+    def test_no_text_enabled(self, sample_config):
+        from dataclasses import replace
+        config = replace(sample_config, no_text=True)
+        assert config.no_text is True

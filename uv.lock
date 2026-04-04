@@ -794,7 +794,7 @@ wheels = [
 
 [[package]]
 name = "opencartograph"
-version = "0.3.0"
+version = "0.4.0"
 source = { editable = "." }
 dependencies = [
     { name = "certifi" },
@@ -829,7 +829,7 @@ dependencies = [
     { name = "urllib3" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "flake8" },
     { name = "mypy" },
@@ -838,19 +838,12 @@ dev = [
     { name = "types-requests" },
 ]
 
-[package.dev-dependencies]
-dev = [
-    { name = "pytest" },
-    { name = "pytest-cov" },
-]
-
 [package.metadata]
 requires-dist = [
     { name = "certifi", specifier = "==2026.1.4" },
     { name = "charset-normalizer", specifier = "==3.4.4" },
     { name = "contourpy", specifier = "==1.3.3" },
     { name = "cycler", specifier = "==0.12.1" },
-    { name = "flake8", marker = "extra == 'dev'", specifier = ">=7.0" },
     { name = "fonttools", specifier = "==4.61.1" },
     { name = "geographiclib", specifier = "==2.1" },
     { name = "geopandas", specifier = "==1.1.2" },
@@ -859,7 +852,6 @@ requires-dist = [
     { name = "kiwisolver", specifier = "==1.4.9" },
     { name = "lat-lon-parser", specifier = "==1.3.1" },
     { name = "matplotlib", specifier = "==3.10.8" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.0" },
     { name = "networkx", specifier = "==3.6.1" },
     { name = "numpy", specifier = "==2.4.0" },
     { name = "osmnx", specifier = "==2.0.7" },
@@ -869,8 +861,6 @@ requires-dist = [
     { name = "pyogrio", specifier = "==0.12.1" },
     { name = "pyparsing", specifier = "==3.3.1" },
     { name = "pyproj", specifier = "==3.7.2" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
-    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0" },
     { name = "python-dateutil", specifier = "==2.9.0.post0" },
     { name = "pytz", specifier = "==2025.2" },
     { name = "requests", specifier = "==2.32.5" },
@@ -878,16 +868,17 @@ requires-dist = [
     { name = "shapely", specifier = "==2.1.2" },
     { name = "six", specifier = "==1.17.0" },
     { name = "tqdm", specifier = "==4.67.1" },
-    { name = "types-requests", marker = "extra == 'dev'", specifier = ">=2.31" },
     { name = "tzdata", specifier = "==2025.3" },
     { name = "urllib3", specifier = "==2.6.3" },
 ]
-provides-extras = ["dev"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "flake8", specifier = ">=7.0" },
+    { name = "mypy", specifier = ">=1.0" },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
+    { name = "types-requests", specifier = ">=2.31" },
 ]
 
 [[package]]

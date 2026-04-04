@@ -1,6 +1,6 @@
 [project]
 name = "opencartograph"
-version = "0.3.0"
+version = "0.4.0"
 description = "An open-source cartographic rendering tool. Generate high-quality map visualizations for any location worldwide using OpenStreetMap data."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -45,13 +45,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
-    "flake8>=7.0",
-    "mypy>=1.0",
-    "types-requests>=2.31",
-]
 
 [project.scripts]
 opencartograph = "opencartograph.cli:main"
@@ -67,4 +60,7 @@ include = ["opencartograph*"]
 dev = [
     "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
+    "flake8>=7.0",
+    "mypy>=1.0",
+    "types-requests>=2.31",
 ]

@@ -72,15 +72,27 @@ def load_theme(
     theme_file = os.path.join(themes_dir, f"{theme_name}.json")
 
     if not os.path.exists(theme_file):
-        print(f"\u26a0 Theme file '{theme_file}' not found. Using default terracotta theme.")
-        return Theme.from_dict(_FALLBACK_THEME_DATA)
+        available = get_available_themes(themes_dir)
+        raise FileNotFoundError(
+            f"Theme file '{theme_file}' not found. "
+            f"Available themes: {', '.join(available)}"
+        )
 
-    with open(theme_file, "r", encoding=constants.FILE_ENCODING) as f:
-        data = json.load(f)
-        print(f"\u2713 Loaded theme: {data.get('name', theme_name)}")
-        if "description" in data:
-            print(f"  {data['description']}")
-        return Theme.from_dict(data)
+    try:
+        with open(theme_file, "r", encoding=constants.FILE_ENCODING) as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Theme file '{theme_file}' contains invalid JSON: {e}") from e
+
+    try:
+        theme = Theme.from_dict(data)
+    except KeyError as e:
+        raise ValueError(f"Theme file '{theme_file}' is missing required field: {e}") from e
+
+    print(f"\u2713 Loaded theme: {data.get('name', theme_name)}")
+    if "description" in data:
+        print(f"  {data['description']}")
+    return theme
 
 
 def list_themes(themes_dir: Path | None = None) -> None:
@@ -105,9 +117,10 @@ def list_themes(themes_dir: Path | None = None) -> None:
                 theme_data = json.load(f)
                 display_name = theme_data.get("name", theme_name)
                 description = theme_data.get("description", "")
-        except (OSError, json.JSONDecodeError):
+        except (OSError, json.JSONDecodeError) as e:
+            print(f"  Warning: Could not read theme file '{theme_name}.json': {e}")
             display_name = theme_name
-            description = ""
+            description = "(error reading theme file)"
         print(f"  {theme_name}")
         print(f"    {display_name}")
         if description:

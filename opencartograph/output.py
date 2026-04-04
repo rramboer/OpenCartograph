@@ -61,5 +61,11 @@ def save_poster(fig: Figure, config: PosterConfig) -> None:
     if fmt == "png":
         save_kwargs["dpi"] = constants.RASTER_DPI
 
-    plt.savefig(config.output_file, format=fmt, **save_kwargs)
+    try:
+        plt.savefig(config.output_file, format=fmt, **save_kwargs)
+    except OSError as e:
+        raise RuntimeError(
+            f"Failed to save poster to '{config.output_file}': {e}. "
+            f"Check that the directory exists and you have write permissions."
+        ) from e
     print(f"\u2713 Done! Poster saved as {config.output_file}")

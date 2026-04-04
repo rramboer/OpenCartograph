@@ -1,5 +1,5 @@
 """
-Rendering pipeline for map poster generation.
+Rendering pipeline for OpenCartograph poster generation.
 """
 
 from .pipeline import compose_poster
