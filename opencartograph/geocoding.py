@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import time
 
+from geopy.exc import GeopyError
 from geopy.geocoders import Nominatim
 
 from . import constants
@@ -53,7 +54,7 @@ def get_coordinates(city: str, country: str) -> Coordinates:
 
     try:
         location = geolocator.geocode(f"{city}, {country}")
-    except Exception as e:
+    except GeopyError as e:
         raise ValueError(f"Geocoding failed for {city}, {country}: {e}") from e
 
     # If geocode returned a coroutine in some environments, run it to get the result.
@@ -81,7 +82,7 @@ def get_coordinates(city: str, country: str) -> Coordinates:
             # Cache as tuple for backward compatibility with existing caches
             cache_set(cache_key, (location.latitude, location.longitude))
         except CacheError as e:
-            print(e)
+            print(f"Warning: {e}")
         return coords
 
     raise ValueError(f"Could not find coordinates for {city}, {country}")

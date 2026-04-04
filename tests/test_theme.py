@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from opencartograph.theme import get_available_themes, list_themes, load_theme
 
 
@@ -39,9 +41,22 @@ class TestLoadTheme:
         assert theme.name == "Alpha"
 
     def test_missing_theme_raises_error(self, tmp_path):
-        import pytest
         with pytest.raises(FileNotFoundError, match="not found"):
             load_theme("nonexistent", tmp_path)
+
+    def test_invalid_json_raises_valueerror(self, tmp_path):
+        import pytest
+        bad_file = tmp_path / "broken.json"
+        bad_file.write_text("{invalid json")
+        with pytest.raises(ValueError, match="invalid JSON"):
+            load_theme("broken", tmp_path)
+
+    def test_missing_required_field_raises_valueerror(self, tmp_path):
+        import pytest
+        incomplete = tmp_path / "incomplete.json"
+        incomplete.write_text('{"name": "Test", "description": "Missing fields"}')
+        with pytest.raises(ValueError, match="missing required field"):
+            load_theme("incomplete", tmp_path)
 
     def test_theme_has_road_colors(self, themes_dir):
         theme = load_theme("alpha", Path(themes_dir))

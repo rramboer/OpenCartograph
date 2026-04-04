@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Z-order bug** - Roads now render above parks and water features (fixes [#39](https://github.com/originalankur/maptoposter/issues/39), relates to [PR #42](https://github.com/originalankur/maptoposter/pull/42))
   - Water layer: `zorder=1` → `zorder=0.5`
   - Parks layer: `zorder=2` → `zorder=0.8`
-  - Roads remain at `zorder=2` (matplotlib default), ensuring proper layering
+  - Roads render at `zorder=1` (osmnx default), ensuring proper layering above water and parks
 - **Text scaling for landscape orientations** - Font size now scales based on `min(height, width)` instead of just width (fixes [#112](https://github.com/originalankur/maptoposter/issues/112))
 
 ### Changed

@@ -34,3 +34,19 @@ class TestCache:
     def test_key_with_path_separators(self, tmp_path):
         cache_set("a/b/c", "safe", cache_dir=tmp_path)
         assert cache_get("a/b/c", cache_dir=tmp_path) == "safe"
+
+    def test_key_with_backslashes(self, tmp_path):
+        cache_set("a\\b\\c", "safe", cache_dir=tmp_path)
+        assert cache_get("a\\b\\c", cache_dir=tmp_path) == "safe"
+
+    def test_key_with_colons_and_spaces(self, tmp_path):
+        cache_set("city: New York, country: USA", "data", cache_dir=tmp_path)
+        assert cache_get("city: New York, country: USA", cache_dir=tmp_path) == "data"
+
+    def test_key_special_chars_produce_flat_file(self, tmp_path):
+        """Verify sanitized keys create files directly in cache_dir, not subdirs."""
+        cache_set("a/b:c\\d e", "val", cache_dir=tmp_path)
+        files = list(tmp_path.glob("*.pkl"))
+        assert len(files) == 1
+        assert "/" not in files[0].name
+        assert "\\" not in files[0].name

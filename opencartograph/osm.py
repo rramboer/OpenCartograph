@@ -11,6 +11,7 @@ import time
 from typing import Any, cast
 
 import osmnx as ox
+# osmnx 2.0.7 does not export these publicly; update if osmnx is bumped
 from osmnx._errors import InsufficientResponseError, ResponseStatusCodeError
 from geopandas import GeoDataFrame
 from networkx import MultiDiGraph
@@ -42,7 +43,11 @@ def fetch_graph(point: Coordinates, dist: int) -> MultiDiGraph | None:
     """
     lat, lon = point.latitude, point.longitude
     cache_key = f"graph_{lat}_{lon}_{dist}"
-    cached = cache_get(cache_key)
+    try:
+        cached = cache_get(cache_key)
+    except CacheError as e:
+        print(f"Warning: {e} -- re-fetching street network")
+        cached = None
     if cached is not None:
         print("\u2713 Using cached street network")
         return cast(MultiDiGraph, cached)
@@ -59,7 +64,7 @@ def fetch_graph(point: Coordinates, dist: int) -> MultiDiGraph | None:
         try:
             cache_set(cache_key, g)
         except CacheError as e:
-            print(e)
+            print(f"Warning: {e}")
         return g
     except (
         InsufficientResponseError,
@@ -92,7 +97,11 @@ def fetch_features(
     lat, lon = point.latitude, point.longitude
     tag_str = "_".join(tags.keys())
     cache_key = f"{name}_{lat}_{lon}_{dist}_{tag_str}"
-    cached = cache_get(cache_key)
+    try:
+        cached = cache_get(cache_key)
+    except CacheError as e:
+        print(f"Warning: {e} -- re-fetching {name}")
+        cached = None
     if cached is not None:
         print(f"\u2713 Using cached {name}")
         return cast(GeoDataFrame, cached)
@@ -103,7 +112,7 @@ def fetch_features(
         try:
             cache_set(cache_key, data)
         except CacheError as e:
-            print(e)
+            print(f"Warning: {e}")
         return data
     except (
         InsufficientResponseError,

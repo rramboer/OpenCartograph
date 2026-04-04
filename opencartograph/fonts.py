@@ -39,7 +39,11 @@ def download_google_font(
         weights = DEFAULT_WEIGHTS
 
     # Create fonts cache directory
-    constants.FONTS_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    try:
+        constants.FONTS_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    except OSError as e:
+        print(f"\u26a0 Cannot create font cache directory '{constants.FONTS_CACHE_DIR}': {e}")
+        return None
 
     # Normalize font family name for file paths
     font_name_safe = font_family.replace(" ", "_").lower()
@@ -107,8 +111,8 @@ def download_google_font(
                     font_response = requests.get(weight_url, timeout=10)
                     font_response.raise_for_status()
                     font_path.write_bytes(font_response.content)
-                except requests.RequestException as e:
-                    print(f"  \u26a0 Failed to download {weight_key}: {e}")
+                except (requests.RequestException, OSError) as e:
+                    print(f"  \u26a0 Failed to download/save {weight_key}: {e}")
                     continue
             else:
                 print(f"  Using cached {font_family} {weight_key}")
