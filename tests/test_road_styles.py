@@ -94,3 +94,14 @@ class TestComputeEdgeStyles:
         g = self._make_graph(["motorway"])
         styles = compute_edge_styles(g, road_colors)
         assert styles.widths == [1.2]
+
+    def test_line_scale_applies_to_all_tiers(self, road_colors):
+        g = self._make_graph(["motorway", "residential"])
+        baseline = compute_edge_styles(g, road_colors, line_scale=1.0)
+        scaled = compute_edge_styles(g, road_colors, line_scale=3.0)
+        assert scaled.widths == [w * 3.0 for w in baseline.widths]
+
+    def test_line_scale_fraction(self, road_colors):
+        g = self._make_graph(["motorway"])
+        styles = compute_edge_styles(g, road_colors, line_scale=0.5)
+        assert styles.widths == [pytest.approx(0.6)]

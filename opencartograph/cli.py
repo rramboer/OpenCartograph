@@ -139,7 +139,7 @@ Examples:
     parser.add_argument(
         "--line-scale", type=float, default=1.0,
         help="Scale factor for road line widths (default: 1.0). "
-             "Use values >1 for thicker roads, <1 for thinner.",
+             "Use values >1 for thicker roads, <1 for thinner. Must be positive.",
     )
 
     return parser
@@ -188,6 +188,10 @@ def main(argv: list[str] | None = None) -> int:
             f"{max_dim}. It's enforced as max limit {max_dim}."
         )
         args.height = max_dim
+
+    if args.line_scale <= 0:
+        print("Error: --line-scale must be a positive number.")
+        return 1
 
     available_themes = get_available_themes()
     if not available_themes:
