@@ -79,7 +79,7 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
         parks = fetch_features(
             config.center,
             compensated_dist,
-            tags={"leisure": "park", "landuse": "grass"},
+            tags={"leisure": "park", "landuse": ["grass", "cemetery"], "natural": "wood"},
             name="parks",
         )
         pbar.update(1)
@@ -133,7 +133,8 @@ def compose_poster(
 
     # Render overlays
     render_gradients(ax, config)
-    render_typography(ax, config, default_fonts)
+    if not config.no_text:
+        render_typography(ax, config, default_fonts)
 
     # Save and cleanup
     save_poster(fig, config)

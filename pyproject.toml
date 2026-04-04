@@ -1,14 +1,15 @@
 [project]
-name = "maptoposter"
-version = "0.2.0"
-description = "Generate beautiful, minimalist map posters for any city in the world."
+name = "opencartograph"
+version = "0.3.0"
+description = "An open-source cartographic rendering tool. Generate high-quality map visualizations for any location worldwide using OpenStreetMap data."
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
 authors = [
-    {name = "Ankur Gupta", email = "originalankur@github.com"}
+    {name = "Ankur Gupta", email = "originalankur@github.com"},
+    {name = "Ryan Ramboer"},
 ]
-keywords = ["map", "poster", "osm", "openstreetmap", "art", "visualization"]
+keywords = ["map", "poster", "osm", "openstreetmap", "cartography", "visualization"]
 
 dependencies = [
     "certifi==2026.1.4",
@@ -53,11 +54,17 @@ dev = [
 ]
 
 [project.scripts]
-maptoposter = "maptoposter.cli:main"
+opencartograph = "opencartograph.cli:main"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include = ["maptoposter*"]
+include = ["opencartograph*"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
+]

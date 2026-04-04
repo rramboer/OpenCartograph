@@ -18,6 +18,10 @@ from . import constants
 from .cache import CacheError, cache_get, cache_set
 from .models import Coordinates
 
+# Enable OSMnx caching to avoid redundant network calls
+ox.settings.use_cache = True
+ox.settings.log_console = False
+
 
 def fetch_graph(point: Coordinates, dist: int) -> MultiDiGraph | None:
     """

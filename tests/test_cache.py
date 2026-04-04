@@ -1,8 +1,8 @@
-"""Tests for maptoposter.cache."""
+"""Tests for opencartograph.cache."""
 
 from __future__ import annotations
 
-from maptoposter.cache import cache_get, cache_set
+from opencartograph.cache import cache_get, cache_set
 
 
 class TestCache:

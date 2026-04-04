@@ -1,14 +1,14 @@
-"""Tests for maptoposter.text."""
+"""Tests for opencartograph.text."""
 
 from __future__ import annotations
 
-from maptoposter.text import (
+from opencartograph.text import (
     compute_city_font_size,
     format_city_display,
     is_latin_script,
     make_font,
 )
-from maptoposter.models import FontSet
+from opencartograph.models import FontSet
 
 
 class TestIsLatinScript:

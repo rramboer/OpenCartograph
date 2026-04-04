@@ -1,5 +1,5 @@
 """
-Constants and default values used throughout the maptoposter package.
+Constants and default values used throughout the opencartograph package.
 """
 
 from __future__ import annotations
@@ -7,7 +7,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-# Project root is the parent of the maptoposter package directory
+# Project root is the parent of the opencartograph package directory
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 # Directory paths (with env-var override for cache)

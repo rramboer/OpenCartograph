@@ -1,10 +1,10 @@
-"""Tests for maptoposter.theme."""
+"""Tests for opencartograph.theme."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
-from maptoposter.theme import get_available_themes, list_themes, load_theme
+from opencartograph.theme import get_available_themes, list_themes, load_theme
 
 
 class TestGetAvailableThemes:
