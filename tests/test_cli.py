@@ -101,6 +101,14 @@ class TestMain:
         result = main(["--list-themes"])
         assert result == 0
 
+    def test_zero_line_scale_returns_1(self):
+        result = main(["--city", "X", "--country", "Y", "--line-scale", "0"])
+        assert result == 1
+
+    def test_negative_line_scale_returns_1(self):
+        result = main(["--city", "X", "--country", "Y", "--line-scale", "-1"])
+        assert result == 1
+
     def test_missing_city_returns_1(self):
         result = main(["--country", "France"])
         assert result == 1
