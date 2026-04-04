@@ -1,6 +1,6 @@
-# City Map Poster Generator
+# OpenCartograph
 
-Generate beautiful, minimalist map posters for any city in the world.
+Generate beautiful, minimalist cartographs for any city in the world.
 
 <img src="posters/singapore_neon_cyberpunk_20260118_153328.png" width="250">
 <img src="posters/dubai_midnight_blue_20260118_140807.png" width="250">
