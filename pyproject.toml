@@ -44,8 +44,6 @@ dependencies = [
     "urllib3==2.6.3",
 ]
 
-[project.optional-dependencies]
-
 [project.scripts]
 opencartograph = "opencartograph.cli:main"
 

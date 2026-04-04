@@ -221,7 +221,7 @@ OpenCartograph/
 │       ├── pipeline.py       # Rendering orchestrator
 │       ├── layers.py         # Individual render layers (water, parks, roads, etc.)
 │       └── viewport.py       # Figure setup and crop calculations
-├── tests/                    # 85 unit tests
+├── tests/                    # Unit tests
 ├── themes/                   # Theme JSON files
 ├── fonts/                    # Bundled Roboto fonts + Google Fonts cache
 └── posters/                  # Generated output
