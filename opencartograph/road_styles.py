@@ -60,13 +60,16 @@ def classify_highway(highway_value: str | list[str]) -> str:
     return HIGHWAY_TIERS.get(highway_value, "default")
 
 
-def compute_edge_styles(graph: MultiDiGraph, road_colors: RoadColors) -> EdgeStyles:
+def compute_edge_styles(
+    graph: MultiDiGraph, road_colors: RoadColors, line_scale: float = 1.0,
+) -> EdgeStyles:
     """
     Single pass over all edges to compute both colors and widths.
 
     Args:
         graph: Projected street network graph
         road_colors: Color assignments from the theme
+        line_scale: Multiplier applied to all road widths
 
     Returns:
         EdgeStyles with parallel colors and widths lists
@@ -86,6 +89,8 @@ def compute_edge_styles(graph: MultiDiGraph, road_colors: RoadColors) -> EdgeSty
     for _u, _v, data in graph.edges(data=True):
         tier = classify_highway(data.get("highway", "unclassified"))
         colors.append(color_map.get(tier, road_colors.default))
-        widths.append(TIER_WIDTHS.get(tier, constants.ROAD_WIDTH_DEFAULT))
+        widths.append(
+            TIER_WIDTHS.get(tier, constants.ROAD_WIDTH_DEFAULT) * line_scale
+        )
 
     return EdgeStyles(colors=colors, widths=widths)

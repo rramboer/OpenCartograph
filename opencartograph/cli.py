@@ -136,6 +136,11 @@ Examples:
         "--no-text", dest="no_text", action="store_true",
         help="Generate poster without any text (city name, country, coordinates, attribution)",
     )
+    parser.add_argument(
+        "--line-scale", type=float, default=1.0,
+        help="Scale factor for road line widths (default: 1.0). "
+             "Use values >1 for thicker roads, <1 for thinner.",
+    )
 
     return parser
 
@@ -253,6 +258,7 @@ def main(argv: list[str] | None = None) -> int:
                 display_city=display_city,
                 display_country=display_country,
                 no_text=args.no_text,
+                line_scale=args.line_scale,
             )
 
             compose_poster(config, default_fonts=default_fonts)
