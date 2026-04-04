@@ -113,7 +113,10 @@ def create_gradient_fade(
     ax: Axes, color: str, location: str = "bottom", zorder: float = 10
 ) -> None:
     """
-    Create a fade effect at the top or bottom of the map.
+    Create a smooth fade effect at the top or bottom of the map.
+
+    Uses a float32 RGBA image with bilinear interpolation instead of a
+    ListedColormap to eliminate visible colour banding on dark themes.
 
     Args:
         ax: Matplotlib axes
@@ -121,25 +124,23 @@ def create_gradient_fade(
         location: 'bottom' or 'top'
         zorder: Z-order for stacking
     """
-    vals = np.linspace(0, 1, 256).reshape(-1, 1)
-    gradient = np.hstack((vals, vals))
-
+    n_rows = 1024
     rgb = mcolors.to_rgb(color)
-    my_colors = np.zeros((256, 4))
-    my_colors[:, 0] = rgb[0]
-    my_colors[:, 1] = rgb[1]
-    my_colors[:, 2] = rgb[2]
+
+    # Build RGBA image: constant colour, varying alpha
+    gradient_img = np.zeros((n_rows, 1, 4), dtype=np.float32)
+    gradient_img[:, 0, 0] = rgb[0]
+    gradient_img[:, 0, 1] = rgb[1]
+    gradient_img[:, 0, 2] = rgb[2]
 
     if location == "bottom":
-        my_colors[:, 3] = np.linspace(1, 0, 256)
+        gradient_img[:, 0, 3] = np.linspace(1, 0, n_rows, dtype=np.float32)
         extent_y_start = 0.0
         extent_y_end = constants.GRADIENT_BOTTOM_END
     else:
-        my_colors[:, 3] = np.linspace(0, 1, 256)
+        gradient_img[:, 0, 3] = np.linspace(0, 1, n_rows, dtype=np.float32)
         extent_y_start = constants.GRADIENT_TOP_START
         extent_y_end = 1.0
-
-    custom_cmap = mcolors.ListedColormap(my_colors)
 
     xlim = ax.get_xlim()
     ylim = ax.get_ylim()
@@ -149,10 +150,10 @@ def create_gradient_fade(
     y_top = ylim[0] + y_range * extent_y_end
 
     ax.imshow(
-        gradient,
+        gradient_img,
         extent=(xlim[0], xlim[1], y_bottom, y_top),
         aspect="auto",
-        cmap=custom_cmap,
+        interpolation="bilinear",
         zorder=zorder,
         origin="lower",
     )
