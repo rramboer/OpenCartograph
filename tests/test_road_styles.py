@@ -1,12 +1,12 @@
-"""Tests for maptoposter.road_styles."""
+"""Tests for opencartograph.road_styles."""
 
 from __future__ import annotations
 
 import networkx as nx
 import pytest
 
-from maptoposter.models import RoadColors
-from maptoposter.road_styles import classify_highway, compute_edge_styles
+from opencartograph.models import RoadColors
+from opencartograph.road_styles import classify_highway, compute_edge_styles
 
 
 class TestClassifyHighway:

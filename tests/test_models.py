@@ -1,10 +1,10 @@
-"""Tests for maptoposter.models."""
+"""Tests for opencartograph.models."""
 
 from __future__ import annotations
 
 import pytest
 
-from maptoposter.models import Coordinates, FontSet, RoadColors, Theme
+from opencartograph.models import Coordinates, FontSet, RoadColors, Theme
 
 
 class TestCoordinates:

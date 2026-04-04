@@ -1,5 +1,5 @@
 """
-Data models for the maptoposter package.
+Data models for the opencartograph package.
 
 All models are frozen dataclasses to prevent accidental mutation.
 """
@@ -111,3 +111,4 @@ class PosterConfig:
     output_format: str
     display_city: str
     display_country: str
+    no_text: bool = False

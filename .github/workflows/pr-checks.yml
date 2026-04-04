@@ -39,10 +39,10 @@ jobs:
         run: python -m compileall . -q
 
       - name: Test CLI help
-        run: python create_map_poster.py --help
+        run: python -m opencartograph --help
 
       - name: Test list themes
-        run: python create_map_poster.py --list-themes
+        run: python -m opencartograph --list-themes
 
       - name: Run unit tests
         run: pytest tests/ -v --tb=short

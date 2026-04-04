@@ -1,7 +1,5 @@
 """
-Command-line interface for the maptoposter tool.
-
-Provides the same argparse interface as the original create_map_poster.py.
+Command-line interface for OpenCartograph.
 """
 
 from __future__ import annotations
@@ -24,42 +22,20 @@ from .theme import get_available_themes, list_themes, load_theme
 def print_examples() -> None:
     """Print usage examples."""
     print("""
-City Map Poster Generator
-=========================
+OpenCartograph
+==============
 
 Usage:
-  python create_map_poster.py --city <city> --country <country> [options]
+  opencartograph --city <city> --country <country> [options]
 
 Examples:
-  # Iconic grid patterns
-  python create_map_poster.py -c "New York" -C "USA" -t noir -d 12000           # Manhattan grid
-  python create_map_poster.py -c "Barcelona" -C "Spain" -t warm_beige -d 8000   # Eixample district grid
-
-  # Waterfront & canals
-  python create_map_poster.py -c "Venice" -C "Italy" -t blueprint -d 4000       # Canal network
-  python create_map_poster.py -c "Amsterdam" -C "Netherlands" -t ocean -d 6000  # Concentric canals
-  python create_map_poster.py -c "Dubai" -C "UAE" -t midnight_blue -d 15000     # Palm & coastline
-
-  # Radial patterns
-  python create_map_poster.py -c "Paris" -C "France" -t pastel_dream -d 10000   # Haussmann boulevards
-  python create_map_poster.py -c "Moscow" -C "Russia" -t noir -d 12000          # Ring roads
-
-  # Organic old cities
-  python create_map_poster.py -c "Tokyo" -C "Japan" -t japanese_ink -d 15000    # Dense organic streets
-  python create_map_poster.py -c "Marrakech" -C "Morocco" -t terracotta -d 5000 # Medina maze
-  python create_map_poster.py -c "Rome" -C "Italy" -t warm_beige -d 8000        # Ancient street layout
-
-  # Coastal cities
-  python create_map_poster.py -c "San Francisco" -C "USA" -t sunset -d 10000    # Peninsula grid
-  python create_map_poster.py -c "Sydney" -C "Australia" -t ocean -d 12000      # Harbor city
-  python create_map_poster.py -c "Mumbai" -C "India" -t contrast_zones -d 18000 # Coastal peninsula
-
-  # River cities
-  python create_map_poster.py -c "London" -C "UK" -t noir -d 15000              # Thames curves
-  python create_map_poster.py -c "Budapest" -C "Hungary" -t copper_patina -d 8000  # Danube split
-
-  # List themes
-  python create_map_poster.py --list-themes
+  opencartograph -c "New York" -C "USA" -t noir -d 12000           # Manhattan grid
+  opencartograph -c "Barcelona" -C "Spain" -t warm_beige -d 8000   # Eixample district grid
+  opencartograph -c "Venice" -C "Italy" -t blueprint -d 4000       # Canal network
+  opencartograph -c "Paris" -C "France" -t pastel_dream -d 10000   # Haussmann boulevards
+  opencartograph -c "Tokyo" -C "Japan" -t japanese_ink -d 15000    # Dense organic streets
+  opencartograph -c "London" -C "UK" -t noir -d 15000              # Thames curves
+  opencartograph -c "Frisco" -C "USA" -t noir -d 6000 --no-text   # Map only, no text
 
 Options:
   --city, -c        City name (required)
@@ -68,6 +44,7 @@ Options:
   --theme, -t       Theme name (default: terracotta)
   --all-themes      Generate posters for all themes
   --distance, -d    Map radius in meters (default: 18000)
+  --no-text         Generate poster without any text overlay
   --list-themes     List all available themes
 
 Distance guide:
@@ -88,15 +65,15 @@ def build_parser() -> argparse.ArgumentParser:
         Configured ArgumentParser
     """
     parser = argparse.ArgumentParser(
-        description="Generate beautiful map posters for any city",
+        description="OpenCartograph - Generate high-quality map visualizations",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python create_map_poster.py --city "New York" --country "USA"
-  python create_map_poster.py --city "New York" --country "USA" -l 40.776676 -73.971321 --theme neon_cyberpunk
-  python create_map_poster.py --city Tokyo --country Japan --theme midnight_blue
-  python create_map_poster.py --city Paris --country France --theme noir --distance 15000
-  python create_map_poster.py --list-themes
+  opencartograph --city "New York" --country "USA"
+  opencartograph --city Tokyo --country Japan --theme midnight_blue
+  opencartograph --city Paris --country France --theme noir --distance 15000
+  opencartograph --city Frisco --country USA --theme noir --no-text -d 6000
+  opencartograph --list-themes
         """,
     )
 
@@ -154,6 +131,10 @@ Examples:
     parser.add_argument(
         "--format", "-f", default="png", choices=["png", "svg", "pdf"],
         help="Output format for the poster (default: png)",
+    )
+    parser.add_argument(
+        "--no-text", dest="no_text", action="store_true",
+        help="Generate poster without any text (city name, country, coordinates, attribution)",
     )
 
     return parser
@@ -218,7 +199,7 @@ def main(argv: list[str] | None = None) -> int:
         themes_to_generate = [args.theme]
 
     print("=" * 50)
-    print("City Map Poster Generator")
+    print("OpenCartograph")
     print("=" * 50)
 
     # Load default fonts (Roboto)
@@ -264,6 +245,7 @@ def main(argv: list[str] | None = None) -> int:
                 output_format=args.format,
                 display_city=display_city,
                 display_country=display_country,
+                no_text=args.no_text,
             )
 
             compose_poster(config, default_fonts=default_fonts)

@@ -1,4 +1,4 @@
-"""Shared test fixtures for maptoposter tests."""
+"""Shared test fixtures for opencartograph tests."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from maptoposter.models import Coordinates, PosterConfig, Theme
+from opencartograph.models import Coordinates, PosterConfig, Theme
 
 
 SAMPLE_THEME_DATA = {

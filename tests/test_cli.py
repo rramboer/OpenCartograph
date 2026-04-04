@@ -1,10 +1,10 @@
-"""Tests for maptoposter.cli."""
+"""Tests for opencartograph.cli."""
 
 from __future__ import annotations
 
 import pytest
 
-from maptoposter.cli import build_parser, main
+from opencartograph.cli import build_parser, main
 
 
 class TestBuildParser:
