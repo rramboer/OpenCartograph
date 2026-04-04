@@ -25,6 +25,7 @@ from .layers import (
     render_typography,
     render_water,
 )
+from .ocean import build_ocean_polygons, render_ocean
 from .viewport import get_crop_limits, setup_figure
 
 
@@ -35,6 +36,7 @@ class MapData:
     graph: MultiDiGraph
     water: GeoDataFrame | None
     parks: GeoDataFrame | None
+    coastline: GeoDataFrame | None
 
 
 def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
@@ -52,7 +54,7 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
         RuntimeError: If street network data cannot be retrieved
     """
     with tqdm(
-        total=3,
+        total=4,
         desc="Fetching map data",
         unit="step",
         bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt}",
@@ -84,8 +86,18 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
         )
         pbar.update(1)
 
+        # 4. Fetch Coastline
+        pbar.set_description("Downloading coastline")
+        coastline = fetch_features(
+            config.center,
+            compensated_dist,
+            tags={"natural": "coastline"},
+            name="coastline",
+        )
+        pbar.update(1)
+
     print("\u2713 All data retrieved successfully!")
-    return MapData(graph=g, water=water, parks=parks)
+    return MapData(graph=g, water=water, parks=parks, coastline=coastline)
 
 
 def compose_poster(
@@ -120,15 +132,23 @@ def compose_poster(
     # Project graph to metric CRS
     g_proj = ox.project_graph(map_data.graph)
 
+    # Compute viewport crop limits early (ocean polygons need them)
+    crop_xlim, crop_ylim = get_crop_limits(
+        g_proj, config.center, fig, compensated_dist
+    )
+
+    # Build and render ocean from coastline data
+    ocean_polys = build_ocean_polygons(
+        map_data.coastline, g_proj.graph["crs"], crop_xlim, crop_ylim,
+    )
+    render_ocean(ax, ocean_polys, config.theme.water)
+
     # Render layers in order
     render_water(ax, map_data.water, g_proj, config)
     render_parks(ax, map_data.parks, g_proj, config)
     render_roads(ax, g_proj, config)
 
     # Apply viewport crop
-    crop_xlim, crop_ylim = get_crop_limits(
-        g_proj, config.center, fig, compensated_dist
-    )
     apply_viewport(ax, crop_xlim, crop_ylim)
 
     # Render overlays
