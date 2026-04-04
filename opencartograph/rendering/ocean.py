@@ -11,7 +11,6 @@ from __future__ import annotations
 from typing import Any
 
 import geopandas as gpd
-import numpy as np
 import osmnx as ox
 from matplotlib.axes import Axes
 from shapely.geometry import box as shapely_box
@@ -98,7 +97,7 @@ def _is_water(polygon, coastline_geom) -> bool:
     # Find the nearest coastline segment
     if coastline_geom.geom_type == "MultiLineString":
         nearest_line = min(
-            coastline_geom.geoms, key=lambda l: l.distance(test_point)
+            coastline_geom.geoms, key=lambda line: line.distance(test_point)
         )
     elif coastline_geom.geom_type == "LineString":
         nearest_line = coastline_geom
