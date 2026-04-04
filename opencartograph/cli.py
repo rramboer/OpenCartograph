@@ -212,6 +212,13 @@ def main(argv: list[str] | None = None) -> int:
         if not custom_fonts:
             print(f"\u26a0 Failed to load '{args.font_family}', falling back to Roboto")
 
+    final_fonts = custom_fonts or default_fonts
+    if final_fonts is None and not args.no_text:
+        print("\u2717 Error: No fonts available for text rendering. "
+              "Ensure Roboto fonts exist in the fonts/ directory, "
+              "or use --no-text to generate without text.")
+        return 1
+
     # Get coordinates and generate poster
     try:
         if args.latitude and args.longitude:
@@ -240,7 +247,7 @@ def main(argv: list[str] | None = None) -> int:
                 width=args.width,
                 height=args.height,
                 theme=theme,
-                fonts=custom_fonts or default_fonts,
+                fonts=final_fonts,
                 output_file=output_file,
                 output_format=args.format,
                 display_city=display_city,

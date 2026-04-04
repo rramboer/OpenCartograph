@@ -33,7 +33,11 @@ def get_coordinates(city: str, country: str) -> Coordinates:
         ValueError: If geocoding fails or returns no result
     """
     cache_key = f"coords_{city.lower()}_{country.lower()}"
-    cached = cache_get(cache_key)
+    try:
+        cached = cache_get(cache_key)
+    except CacheError as e:
+        print(f"Warning: {e} -- re-fetching coordinates")
+        cached = None
     if cached:
         print(f"\u2713 Using cached coordinates for {city}, {country}")
         # Handle both old tuple format and new Coordinates format
@@ -42,7 +46,7 @@ def get_coordinates(city: str, country: str) -> Coordinates:
         return cached
 
     print("Looking up coordinates...")
-    geolocator = Nominatim(user_agent="city_map_poster", timeout=10)
+    geolocator = Nominatim(user_agent="opencartograph", timeout=10)
 
     # Add a small delay to respect Nominatim's usage policy
     time.sleep(constants.GEOCODING_DELAY)

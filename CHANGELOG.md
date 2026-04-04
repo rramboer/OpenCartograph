@@ -5,13 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - Community Contributions
+## [Unreleased]
+
+## [0.4.0] - OpenCartograph
 
 ### Added
+- **Package rename** - Renamed from `maptoposter` to `opencartograph`
+  - New `opencartograph` Python package with proper module structure
+  - CLI entry point: `opencartograph` command via `pyproject.toml` scripts
+  - Removed legacy `create_map_poster.py` and `font_management.py` entry points
+- **`--no-text` flag** - Generate posters without typography overlay
+- **Expanded green-space rendering** - Parks layer now includes cemeteries (`landuse=cemetery`) and woods (`natural=wood`)
+- **OSMnx caching** - Enabled `ox.settings.use_cache = True` for faster repeated fetches
 - **uv package manager support** ([PR #20](https://github.com/originalankur/maptoposter/pull/20))
   - Added `pyproject.toml` with project metadata and dependencies
   - Added `uv.lock` for reproducible builds
-  - Added shebang to `create_map_poster.py` for direct execution
   - Updated README with uv installation instructions
 - **Python version specification** - `requires-python = ">=3.11"` in pyproject.toml (fixes [#79](https://github.com/originalankur/maptoposter/issues/79))
 - **Coordinate override** - `--latitude` and `--longitude` arguments to override the geocoded center point (existing from upstream PR #106, clarifies [#100](https://github.com/originalankur/maptoposter/issues/100))

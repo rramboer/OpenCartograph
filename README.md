@@ -39,7 +39,7 @@ git clone https://github.com/rramboer/OpenCartograph.git
 cd OpenCartograph
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+pip install .
 ```
 
 ## Quick Start

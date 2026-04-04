@@ -38,9 +38,10 @@ class TestLoadTheme:
         theme = load_theme("alpha", Path(themes_dir))
         assert theme.name == "Alpha"
 
-    def test_missing_theme_returns_fallback(self, tmp_path):
-        theme = load_theme("nonexistent", tmp_path)
-        assert theme.name == "Terracotta"
+    def test_missing_theme_raises_error(self, tmp_path):
+        import pytest
+        with pytest.raises(FileNotFoundError, match="not found"):
+            load_theme("nonexistent", tmp_path)
 
     def test_theme_has_road_colors(self, themes_dir):
         theme = load_theme("alpha", Path(themes_dir))
