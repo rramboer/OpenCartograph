@@ -28,7 +28,7 @@ def _cache_path(key: str, cache_dir: Path | None = None) -> str:
         Path to cache file with .pkl extension
     """
     cache_dir = cache_dir or constants.CACHE_DIR
-    safe = key.replace(os.sep, "_")
+    safe = "".join(c if c.isalnum() or c in "._-" else "_" for c in key)
     return os.path.join(cache_dir, f"{safe}.pkl")
 
 
