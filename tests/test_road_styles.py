@@ -84,3 +84,13 @@ class TestComputeEdgeStyles:
         styles = compute_edge_styles(g, road_colors)
         assert styles.colors == []
         assert styles.widths == []
+
+    def test_line_scale_doubles_widths(self, road_colors):
+        g = self._make_graph(["motorway"])
+        styles = compute_edge_styles(g, road_colors, line_scale=2.0)
+        assert styles.widths == [2.4]
+
+    def test_line_scale_default_is_unscaled(self, road_colors):
+        g = self._make_graph(["motorway"])
+        styles = compute_edge_styles(g, road_colors)
+        assert styles.widths == [1.2]

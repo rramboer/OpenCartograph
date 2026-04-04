@@ -76,6 +76,16 @@ class TestBuildParser:
         args = parser.parse_args(["-c", "X", "-C", "Y"])
         assert args.no_text is False
 
+    def test_line_scale_flag(self):
+        parser = build_parser()
+        args = parser.parse_args(["-c", "X", "-C", "Y", "--line-scale", "2.5"])
+        assert args.line_scale == 2.5
+
+    def test_line_scale_default(self):
+        parser = build_parser()
+        args = parser.parse_args(["-c", "X", "-C", "Y"])
+        assert args.line_scale == 1.0
+
     def test_latitude_longitude(self):
         parser = build_parser()
         args = parser.parse_args([

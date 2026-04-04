@@ -112,3 +112,4 @@ class PosterConfig:
     display_city: str
     display_country: str
     no_text: bool = False
+    line_scale: float = 1.0

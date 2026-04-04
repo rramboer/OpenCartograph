@@ -85,7 +85,7 @@ def render_roads(
 ) -> None:
     """Render the road network with themed hierarchy colors and widths."""
     print("Applying road hierarchy colors...")
-    styles = compute_edge_styles(g_proj, config.theme.roads)
+    styles = compute_edge_styles(g_proj, config.theme.roads, config.line_scale)
     ox.plot_graph(
         g_proj,
         ax=ax,
