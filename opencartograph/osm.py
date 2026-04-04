@@ -11,6 +11,7 @@ import time
 from typing import Any, cast
 
 import osmnx as ox
+from osmnx._errors import InsufficientResponseError, ResponseStatusCodeError
 from geopandas import GeoDataFrame
 from networkx import MultiDiGraph
 
@@ -61,8 +62,8 @@ def fetch_graph(point: Coordinates, dist: int) -> MultiDiGraph | None:
             print(e)
         return g
     except (
-        ox.InsufficientResponseError,
-        ox.ResponseStatusCodeError,
+        InsufficientResponseError,
+        ResponseStatusCodeError,
         requests.RequestException,
         ValueError,
     ) as e:
@@ -105,8 +106,8 @@ def fetch_features(
             print(e)
         return data
     except (
-        ox.InsufficientResponseError,
-        ox.ResponseStatusCodeError,
+        InsufficientResponseError,
+        ResponseStatusCodeError,
         requests.RequestException,
         ValueError,
     ) as e:
