@@ -145,7 +145,7 @@ class TestMain:
         assert result == 1
 
     def test_quality_preset_applies_dimensions_and_dpi(self):
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import patch
         from opencartograph.models import Coordinates
         coords = Coordinates(latitude=48.8, longitude=2.3)
         with patch("opencartograph.cli.get_coordinates", return_value=coords), \
@@ -157,7 +157,7 @@ class TestMain:
             assert config.dpi == 150
 
     def test_quality_preset_overridden_by_explicit_width(self):
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import patch
         from opencartograph.models import Coordinates
         coords = Coordinates(latitude=48.8, longitude=2.3)
         with patch("opencartograph.cli.get_coordinates", return_value=coords), \
