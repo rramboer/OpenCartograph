@@ -104,11 +104,11 @@ Examples:
         help=f"Map radius in meters (default: {constants.DEFAULT_DISTANCE})",
     )
     parser.add_argument(
-        "--width", "-W", type=float, default=constants.DEFAULT_WIDTH,
+        "--width", "-W", type=float, default=None,
         help=f"Image width in inches (default: {constants.DEFAULT_WIDTH}, max: {constants.MAX_DIMENSION_INCHES})",
     )
     parser.add_argument(
-        "--height", "-H", type=float, default=constants.DEFAULT_HEIGHT,
+        "--height", "-H", type=float, default=None,
         help=f"Image height in inches (default: {constants.DEFAULT_HEIGHT}, max: {constants.MAX_DIMENSION_INCHES})",
     )
     parser.add_argument(
@@ -191,10 +191,18 @@ def main(argv: list[str] | None = None) -> int:
     if args.quality:
         preset_w, preset_h, preset_dpi = constants.QUALITY_PRESETS[args.quality]
         dpi = preset_dpi
-        if args.width == constants.DEFAULT_WIDTH:
+        if args.width is None:
             args.width = preset_w
-        if args.height == constants.DEFAULT_HEIGHT:
+        if args.height is None:
             args.height = preset_h
+
+    # Apply defaults for anything still unset
+    if args.width is None:
+        args.width = constants.DEFAULT_WIDTH
+    if args.height is None:
+        args.height = constants.DEFAULT_HEIGHT
+
+    if args.quality:
         print(f"\u2713 Quality preset: {args.quality} "
               f"({args.width}x{args.height} inches, {dpi} DPI)")
 

@@ -27,8 +27,8 @@ class TestBuildParser:
         args = parser.parse_args(["-c", "X", "-C", "Y"])
         assert args.theme == "terracotta"
         assert args.distance == 18000
-        assert args.width == 12.0
-        assert args.height == 16.0
+        assert args.width is None
+        assert args.height is None
         assert args.format == "png"
 
     def test_quality_flag(self):
