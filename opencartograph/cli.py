@@ -220,6 +220,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.quality:
         print(f"\u2713 Quality preset: {args.quality} "
               f"({args.width}x{args.height} inches, {dpi} DPI)")
+        if args.format == "svg":
+            print("  Note: DPI setting has no effect on SVG output (vector format).")
 
     if args.line_scale <= 0:
         print("Error: --line-scale must be a positive number.")
@@ -306,6 +308,11 @@ def main(argv: list[str] | None = None) -> int:
         print("=" * 50)
         return 0
 
+    except MemoryError:
+        print("\nError: Not enough memory to render at the requested quality.")
+        print("Try a lower quality preset (e.g., --quality high) or reduce dimensions.")
+        traceback.print_exc()
+        return 1
     except Exception as e:
         print(f"\n\u2717 Error: {e}")
         traceback.print_exc()

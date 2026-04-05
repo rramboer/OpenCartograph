@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+from unittest.mock import patch
+
 import pytest
 
 from opencartograph.cli import build_parser, main
+from opencartograph.models import Coordinates
 
 
 class TestBuildParser:
@@ -145,8 +148,6 @@ class TestMain:
         assert result == 1
 
     def test_quality_preset_applies_dimensions_and_dpi(self):
-        from unittest.mock import patch
-        from opencartograph.models import Coordinates
         coords = Coordinates(latitude=48.8, longitude=2.3)
         with patch("opencartograph.cli.get_coordinates", return_value=coords), \
              patch("opencartograph.cli.compose_poster") as mock_compose:
@@ -157,8 +158,6 @@ class TestMain:
             assert config.dpi == 150
 
     def test_quality_preset_overridden_by_explicit_width(self):
-        from unittest.mock import patch
-        from opencartograph.models import Coordinates
         coords = Coordinates(latitude=48.8, longitude=2.3)
         with patch("opencartograph.cli.get_coordinates", return_value=coords), \
              patch("opencartograph.cli.compose_poster") as mock_compose:
@@ -167,6 +166,32 @@ class TestMain:
             assert config.width == 10.0  # explicit override
             assert config.height == 8.0  # from preset
             assert config.dpi == 150     # from preset
+
+    def test_quality_preset_overridden_by_explicit_height(self):
+        coords = Coordinates(latitude=48.8, longitude=2.3)
+        with patch("opencartograph.cli.get_coordinates", return_value=coords), \
+             patch("opencartograph.cli.compose_poster") as mock_compose:
+            main(["--city", "Paris", "--country", "France", "-q", "low", "-H", "10"])
+            config = mock_compose.call_args[0][0]
+            assert config.width == 6.0   # from preset
+            assert config.height == 10.0  # explicit override
+            assert config.dpi == 150      # from preset
+
+    def test_dimension_clamped_to_max(self):
+        coords = Coordinates(latitude=48.8, longitude=2.3)
+        with patch("opencartograph.cli.get_coordinates", return_value=coords), \
+             patch("opencartograph.cli.compose_poster") as mock_compose:
+            main(["--city", "Paris", "--country", "France", "-W", "25", "-H", "30"])
+            config = mock_compose.call_args[0][0]
+            assert config.width == 20.0
+            assert config.height == 20.0
+
+    def test_memory_error_returns_1(self):
+        coords = Coordinates(latitude=48.8, longitude=2.3)
+        with patch("opencartograph.cli.get_coordinates", return_value=coords), \
+             patch("opencartograph.cli.compose_poster", side_effect=MemoryError):
+            result = main(["--city", "Paris", "--country", "France", "-q", "ultra"])
+            assert result == 1
 
     def test_missing_city_returns_1(self):
         result = main(["--country", "France"])
