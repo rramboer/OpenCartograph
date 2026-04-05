@@ -13,6 +13,7 @@ dist/
 build/
 *.pyc
 __pycache__/
+.mypy_cache/
 
 # IDE
 .idea/
