@@ -7,6 +7,7 @@ from __future__ import annotations
 import argparse
 import sys
 import traceback
+from datetime import date
 
 from lat_lon_parser import parse
 
@@ -302,7 +303,7 @@ def main(argv: list[str] | None = None) -> int:
                 display_country=display_country,
                 no_text=args.no_text,
                 line_scale=args.line_scale,
-                show_date=args.show_date,
+                date_text=date.today().strftime("%B %d, %Y") if args.show_date else None,
                 dpi=dpi,
             )
 
