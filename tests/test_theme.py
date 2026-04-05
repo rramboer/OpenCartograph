@@ -71,6 +71,14 @@ class TestLoadTheme:
         theme = load_theme("custom/my_theme", themes)
         assert theme.name == "Test Theme"
 
+    def test_path_traversal_rejected(self, tmp_path):
+        with pytest.raises(ValueError, match="Invalid theme name"):
+            load_theme("../../etc/passwd", tmp_path)
+
+    def test_dotdot_in_subdir_rejected(self, tmp_path):
+        with pytest.raises(ValueError, match="Invalid theme name"):
+            load_theme("custom/../../../etc/passwd", tmp_path)
+
     def test_missing_theme_raises_error(self, tmp_path):
         with pytest.raises(FileNotFoundError, match="not found"):
             load_theme("nonexistent", tmp_path)

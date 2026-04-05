@@ -55,8 +55,13 @@ def load_theme(
         Theme dataclass with all color values
     """
     themes_dir = themes_dir or constants.THEMES_DIR
-    # theme_name may contain / for subdirectory themes (e.g. "custom/my_theme")
-    theme_file = os.path.join(themes_dir, *theme_name.split("/")) + ".json"
+    # Validate theme name: reject path traversal attempts
+    parts = [p for p in theme_name.split("/") if p]
+    if not parts or ".." in parts:
+        raise ValueError(f"Invalid theme name: {theme_name!r}")
+    theme_file = os.path.realpath(os.path.join(themes_dir, *parts) + ".json")
+    if not theme_file.startswith(os.path.realpath(str(themes_dir)) + os.sep):
+        raise ValueError(f"Invalid theme name: {theme_name!r}")
 
     if not os.path.exists(theme_file):
         available = get_available_themes(themes_dir)
