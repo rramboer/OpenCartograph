@@ -3,42 +3,35 @@
 from __future__ import annotations
 
 import re
-from unittest.mock import patch
 
 from opencartograph.output import generate_output_filename
 
 
 class TestGenerateOutputFilename:
     def test_format_png(self, tmp_path):
-        with patch("opencartograph.output.constants") as mock_constants:
-            mock_constants.POSTERS_DIR = str(tmp_path / "posters")
-            result = generate_output_filename("Paris", "noir", "png")
-            assert result.endswith(".png")
-            assert "paris" in result
-            assert "noir" in result
+        result = generate_output_filename("Paris", "noir", "png", output_dir=str(tmp_path))
+        assert result.endswith(".png")
+        assert "paris" in result
+        assert "noir" in result
 
     def test_format_svg(self, tmp_path):
-        with patch("opencartograph.output.constants") as mock_constants:
-            mock_constants.POSTERS_DIR = str(tmp_path / "posters")
-            result = generate_output_filename("London", "ocean", "svg")
-            assert result.endswith(".svg")
+        result = generate_output_filename("London", "ocean", "svg", output_dir=str(tmp_path))
+        assert result.endswith(".svg")
 
     def test_city_with_spaces(self, tmp_path):
-        with patch("opencartograph.output.constants") as mock_constants:
-            mock_constants.POSTERS_DIR = str(tmp_path / "posters")
-            result = generate_output_filename("New York", "noir", "png")
-            assert "new_york" in result
+        result = generate_output_filename("New York", "noir", "png", output_dir=str(tmp_path))
+        assert "new_york" in result
 
     def test_creates_directory(self, tmp_path):
-        posters_dir = tmp_path / "new_posters"
-        with patch("opencartograph.output.constants") as mock_constants:
-            mock_constants.POSTERS_DIR = str(posters_dir)
-            generate_output_filename("Paris", "noir", "png")
-            assert posters_dir.exists()
+        out_dir = tmp_path / "new_output"
+        generate_output_filename("Paris", "noir", "png", output_dir=str(out_dir))
+        assert out_dir.exists()
 
     def test_timestamp_in_filename(self, tmp_path):
-        with patch("opencartograph.output.constants") as mock_constants:
-            mock_constants.POSTERS_DIR = str(tmp_path / "posters")
-            result = generate_output_filename("Paris", "noir", "png")
-            # Should contain YYYYMMDD_HHMMSS pattern
-            assert re.search(r"\d{8}_\d{6}", result)
+        result = generate_output_filename("Paris", "noir", "png", output_dir=str(tmp_path))
+        assert re.search(r"\d{8}_\d{6}", result)
+
+    def test_custom_output_dir(self, tmp_path):
+        custom = tmp_path / "my_posters"
+        result = generate_output_filename("Paris", "noir", "png", output_dir=str(custom))
+        assert str(custom) in result

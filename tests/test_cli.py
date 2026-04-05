@@ -31,6 +31,21 @@ class TestBuildParser:
         assert args.height == 16.0
         assert args.format == "png"
 
+    def test_output_dir_flag(self):
+        parser = build_parser()
+        args = parser.parse_args(["-c", "X", "-C", "Y", "--output-dir", "/tmp/my_posters"])
+        assert args.output_dir == "/tmp/my_posters"
+
+    def test_output_dir_short_flag(self):
+        parser = build_parser()
+        args = parser.parse_args(["-c", "X", "-C", "Y", "-o", "/tmp/out"])
+        assert args.output_dir == "/tmp/out"
+
+    def test_output_dir_default_none(self):
+        parser = build_parser()
+        args = parser.parse_args(["-c", "X", "-C", "Y"])
+        assert args.output_dir is None
+
     def test_all_themes_flag(self):
         parser = build_parser()
         args = parser.parse_args(["-c", "X", "-C", "Y", "--all-themes"])

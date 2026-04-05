@@ -141,6 +141,10 @@ Examples:
         help="Scale factor for road line widths (default: 1.0). "
              "Use values >1 for thicker roads, <1 for thinner. Must be positive.",
     )
+    parser.add_argument(
+        "--output-dir", "-o", type=str, default=None,
+        help="Output directory for generated posters (default: output/)",
+    )
 
     return parser
 
@@ -241,7 +245,8 @@ def main(argv: list[str] | None = None) -> int:
         for theme_name in themes_to_generate:
             theme = load_theme(theme_name)
             output_file = generate_output_filename(
-                args.city, theme_name, args.format
+                args.city, theme_name, args.format,
+                output_dir=args.output_dir,
             )
 
             # Resolve display names

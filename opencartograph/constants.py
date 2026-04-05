@@ -15,7 +15,7 @@ CACHE_DIR = Path(os.environ.get("CACHE_DIR", str(PROJECT_ROOT / "cache")))
 THEMES_DIR = PROJECT_ROOT / "themes"
 FONTS_DIR = PROJECT_ROOT / "fonts"
 FONTS_CACHE_DIR = FONTS_DIR / "cache"
-POSTERS_DIR = PROJECT_ROOT / "posters"
+OUTPUT_DIR = PROJECT_ROOT / "output"
 
 FILE_ENCODING = "utf-8"
 
