@@ -137,6 +137,10 @@ Examples:
         help="Generate poster without any text (city name, country, coordinates, attribution)",
     )
     parser.add_argument(
+        "--show-date", dest="show_date", action="store_true",
+        help="Display the current date on the poster (below coordinates)",
+    )
+    parser.add_argument(
         "--line-scale", type=float, default=1.0,
         help="Scale factor for road line widths (default: 1.0). "
              "Use values >1 for thicker roads, <1 for thinner. Must be positive.",
@@ -298,6 +302,7 @@ def main(argv: list[str] | None = None) -> int:
                 display_country=display_country,
                 no_text=args.no_text,
                 line_scale=args.line_scale,
+                show_date=args.show_date,
                 dpi=dpi,
             )
 

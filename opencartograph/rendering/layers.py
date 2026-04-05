@@ -224,6 +224,17 @@ def render_typography(
         fontproperties=font_coords, zorder=zorder,
     )
 
+    # Date (optional)
+    if config.show_date:
+        from datetime import date
+        date_text = date.today().strftime("%B %d, %Y")
+        ax.text(
+            0.5, constants.TEXT_Y_DATE, date_text,
+            transform=ax.transAxes, color=text_color,
+            alpha=constants.COORDS_ALPHA, ha="center",
+            fontproperties=font_coords, zorder=zorder,
+        )
+
     # Divider line
     ax.plot(
         [constants.DIVIDER_X_START, constants.DIVIDER_X_END],
