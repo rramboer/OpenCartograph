@@ -202,10 +202,6 @@ def main(argv: list[str] | None = None) -> int:
     if args.height is None:
         args.height = constants.DEFAULT_HEIGHT
 
-    if args.quality:
-        print(f"\u2713 Quality preset: {args.quality} "
-              f"({args.width}x{args.height} inches, {dpi} DPI)")
-
     # Enforce maximum dimensions
     max_dim = constants.MAX_DIMENSION_INCHES
     if args.width > max_dim:
@@ -220,6 +216,10 @@ def main(argv: list[str] | None = None) -> int:
             f"{max_dim}. It's enforced as max limit {max_dim}."
         )
         args.height = max_dim
+
+    if args.quality:
+        print(f"\u2713 Quality preset: {args.quality} "
+              f"({args.width}x{args.height} inches, {dpi} DPI)")
 
     if args.line_scale <= 0:
         print("Error: --line-scale must be a positive number.")
