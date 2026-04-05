@@ -113,4 +113,5 @@ class PosterConfig:
     display_country: str
     no_text: bool = False
     line_scale: float = 1.0
+    show_date: bool = False
     dpi: int = constants.RASTER_DPI

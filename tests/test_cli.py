@@ -104,6 +104,16 @@ class TestBuildParser:
         with pytest.raises(SystemExit):
             parser.parse_args(["-c", "X", "-C", "Y", "-f", "bmp"])
 
+    def test_show_date_flag(self):
+        parser = build_parser()
+        args = parser.parse_args(["-c", "X", "-C", "Y", "--show-date"])
+        assert args.show_date is True
+
+    def test_show_date_default_false(self):
+        parser = build_parser()
+        args = parser.parse_args(["-c", "X", "-C", "Y"])
+        assert args.show_date is False
+
     def test_no_text_flag(self):
         parser = build_parser()
         args = parser.parse_args(["-c", "X", "-C", "Y", "--no-text"])
