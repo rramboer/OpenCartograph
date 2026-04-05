@@ -51,6 +51,14 @@ MAX_DIMENSION_INCHES = 20.0
 # Poster DPI for raster formats
 RASTER_DPI = 300
 
+# Quality presets: (width_inches, height_inches, dpi)
+QUALITY_PRESETS: dict[str, tuple[float, float, int]] = {
+    "low": (6.0, 8.0, 150),
+    "standard": (12.0, 16.0, 300),
+    "high": (16.0, 21.0, 400),
+    "ultra": (18.0, 24.0, 600),
+}
+
 # Text vertical positions (fraction of axes height)
 TEXT_Y_CITY = 0.14
 TEXT_Y_DIVIDER = 0.125

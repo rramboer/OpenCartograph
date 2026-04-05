@@ -145,6 +145,14 @@ Examples:
         "--output-dir", "-o", type=str, default=None,
         help="Output directory for generated posters (default: output/)",
     )
+    parser.add_argument(
+        "--quality", "-q",
+        choices=list(constants.QUALITY_PRESETS.keys()),
+        default=None,
+        help="Quality preset: low (150 DPI), standard (300 DPI), "
+             "high (400 DPI), ultra (600 DPI). "
+             "Sets width, height, and DPI. Explicit --width/--height override.",
+    )
 
     return parser
 
@@ -177,6 +185,18 @@ def main(argv: list[str] | None = None) -> int:
         print("Error: --city and --country are required.\n")
         print_examples()
         return 1
+
+    # Apply quality preset (explicit --width/--height override preset values)
+    dpi = constants.RASTER_DPI
+    if args.quality:
+        preset_w, preset_h, preset_dpi = constants.QUALITY_PRESETS[args.quality]
+        dpi = preset_dpi
+        if args.width == constants.DEFAULT_WIDTH:
+            args.width = preset_w
+        if args.height == constants.DEFAULT_HEIGHT:
+            args.height = preset_h
+        print(f"\u2713 Quality preset: {args.quality} "
+              f"({args.width}x{args.height} inches, {dpi} DPI)")
 
     # Enforce maximum dimensions
     max_dim = constants.MAX_DIMENSION_INCHES
@@ -268,6 +288,7 @@ def main(argv: list[str] | None = None) -> int:
                 display_country=display_country,
                 no_text=args.no_text,
                 line_scale=args.line_scale,
+                dpi=dpi,
             )
 
             compose_poster(config, default_fonts=default_fonts)
