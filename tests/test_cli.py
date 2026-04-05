@@ -31,6 +31,26 @@ class TestBuildParser:
         assert args.height == 16.0
         assert args.format == "png"
 
+    def test_quality_flag(self):
+        parser = build_parser()
+        args = parser.parse_args(["-c", "X", "-C", "Y", "--quality", "low"])
+        assert args.quality == "low"
+
+    def test_quality_short_flag(self):
+        parser = build_parser()
+        args = parser.parse_args(["-c", "X", "-C", "Y", "-q", "ultra"])
+        assert args.quality == "ultra"
+
+    def test_quality_default_none(self):
+        parser = build_parser()
+        args = parser.parse_args(["-c", "X", "-C", "Y"])
+        assert args.quality is None
+
+    def test_quality_invalid_rejected(self):
+        parser = build_parser()
+        with pytest.raises(SystemExit):
+            parser.parse_args(["-c", "X", "-C", "Y", "-q", "invalid"])
+
     def test_output_dir_flag(self):
         parser = build_parser()
         args = parser.parse_args(["-c", "X", "-C", "Y", "--output-dir", "/tmp/my_posters"])

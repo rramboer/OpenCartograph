@@ -62,7 +62,7 @@ def save_poster(fig: Figure, config: PosterConfig) -> None:
 
     # DPI matters mainly for raster formats
     if fmt == "png":
-        save_kwargs["dpi"] = constants.RASTER_DPI
+        save_kwargs["dpi"] = config.dpi
 
     try:
         plt.savefig(config.output_file, format=fmt, **save_kwargs)
