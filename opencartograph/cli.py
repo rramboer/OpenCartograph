@@ -46,6 +46,7 @@ Options:
   --all-themes      Generate posters for all themes
   --distance, -d    Map radius in meters (default: 18000)
   --no-text         Generate poster without any text overlay
+  --show-date       Display the current date on the poster
   --list-themes     List all available themes
 
 Distance guide:
@@ -54,7 +55,7 @@ Distance guide:
   15000-20000m Large metros, full city view (Tokyo, Mumbai)
 
 Available themes can be found in the 'themes/' directory.
-Generated posters are saved to 'posters/' directory.
+Generated posters are saved to 'output/' directory.
 """)
 
 
