@@ -1,4 +1,5 @@
 cache/*
+output/
 
 # Virtual environments
 env/

@@ -17,7 +17,8 @@ from .models import PosterConfig
 
 
 def generate_output_filename(
-    city: str, theme_name: str, output_format: str
+    city: str, theme_name: str, output_format: str,
+    output_dir: str | None = None,
 ) -> str:
     """
     Generate unique output filename with city, theme, and datetime.
@@ -26,18 +27,20 @@ def generate_output_filename(
         city: City name
         theme_name: Theme name
         output_format: File format extension (png, svg, pdf)
+        output_dir: Override output directory (defaults to constants.OUTPUT_DIR)
 
     Returns:
-        Full path to output file in posters directory
+        Full path to output file
     """
-    if not os.path.exists(constants.POSTERS_DIR):
-        os.makedirs(constants.POSTERS_DIR)
+    out_dir = output_dir or str(constants.OUTPUT_DIR)
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     city_slug = city.lower().replace(" ", "_")
     ext = output_format.lower()
     filename = f"{city_slug}_{theme_name}_{timestamp}.{ext}"
-    return os.path.join(constants.POSTERS_DIR, filename)
+    return os.path.join(out_dir, filename)
 
 
 def save_poster(fig: Figure, config: PosterConfig) -> None:
