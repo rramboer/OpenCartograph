@@ -35,10 +35,41 @@ class TestGetAvailableThemes:
         assert result == ["test"]
 
 
+    def test_finds_themes_in_subdirectories(self, tmp_path):
+        themes = tmp_path / "themes"
+        themes.mkdir()
+        (themes / "top.json").write_text('{"name": "Top"}')
+        custom = themes / "custom"
+        custom.mkdir()
+        (custom / "deep.json").write_text('{"name": "Deep"}')
+        result = get_available_themes(themes)
+        assert "top" in result
+        assert "custom/deep" in result
+
+    def test_subdirectory_themes_sorted(self, tmp_path):
+        themes = tmp_path / "themes"
+        themes.mkdir()
+        (themes / "zebra.json").write_text('{"name": "Z"}')
+        sub = themes / "aaa"
+        sub.mkdir()
+        (sub / "first.json").write_text('{"name": "F"}')
+        result = get_available_themes(themes)
+        assert result == ["aaa/first", "zebra"]
+
+
 class TestLoadTheme:
     def test_loads_valid_theme(self, themes_dir):
         theme = load_theme("alpha", Path(themes_dir))
         assert theme.name == "Alpha"
+
+    def test_loads_subdirectory_theme(self, tmp_path, sample_theme_data):
+        import json
+        themes = tmp_path / "themes"
+        sub = themes / "custom"
+        sub.mkdir(parents=True)
+        (sub / "my_theme.json").write_text(json.dumps(sample_theme_data))
+        theme = load_theme("custom/my_theme", themes)
+        assert theme.name == "Test Theme"
 
     def test_missing_theme_raises_error(self, tmp_path):
         with pytest.raises(FileNotFoundError, match="not found"):

@@ -31,10 +31,14 @@ def get_available_themes(themes_dir: Path | None = None) -> list[str]:
         return []
 
     themes = []
-    for file in sorted(os.listdir(themes_dir)):
-        if file.endswith(".json"):
-            themes.append(file[:-5])  # Remove .json extension
-    return themes
+    for dirpath, _dirnames, filenames in os.walk(themes_dir):
+        for file in filenames:
+            if file.endswith(".json"):
+                rel = os.path.relpath(os.path.join(dirpath, file), themes_dir)
+                # Use forward slash as separator and strip .json
+                name = rel.replace(os.sep, "/")[:-5]
+                themes.append(name)
+    return sorted(themes)
 
 
 def load_theme(
@@ -51,7 +55,8 @@ def load_theme(
         Theme dataclass with all color values
     """
     themes_dir = themes_dir or constants.THEMES_DIR
-    theme_file = os.path.join(themes_dir, f"{theme_name}.json")
+    # theme_name may contain / for subdirectory themes (e.g. "custom/my_theme")
+    theme_file = os.path.join(themes_dir, *theme_name.split("/")) + ".json"
 
     if not os.path.exists(theme_file):
         available = get_available_themes(themes_dir)
@@ -93,7 +98,7 @@ def list_themes(themes_dir: Path | None = None) -> None:
     print("\nAvailable Themes:")
     print("-" * 60)
     for theme_name in available:
-        theme_path = os.path.join(themes_dir, f"{theme_name}.json")
+        theme_path = os.path.join(themes_dir, *theme_name.split("/")) + ".json"
         try:
             with open(theme_path, "r", encoding=constants.FILE_ENCODING) as f:
                 theme_data = json.load(f)
