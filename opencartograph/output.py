@@ -60,8 +60,8 @@ def save_poster(fig: Figure, config: PosterConfig) -> None:
         pad_inches=0.05,
     )
 
-    # DPI matters mainly for raster formats
-    if fmt == "png":
+    # DPI matters for raster formats and rasterized elements in PDF
+    if fmt in ("png", "pdf"):
         save_kwargs["dpi"] = config.dpi
 
     try:
