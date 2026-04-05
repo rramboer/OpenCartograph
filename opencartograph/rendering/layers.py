@@ -225,7 +225,7 @@ def render_typography(
     )
 
     # Date (optional, resolved by CLI)
-    if config.date_text:
+    if config.date_text is not None:
         ax.text(
             0.5, constants.TEXT_Y_DATE, config.date_text,
             transform=ax.transAxes, color=text_color,
