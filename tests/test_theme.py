@@ -34,7 +34,6 @@ class TestGetAvailableThemes:
         result = get_available_themes(themes)
         assert result == ["test"]
 
-
     def test_finds_themes_in_subdirectories(self, tmp_path):
         themes = tmp_path / "themes"
         themes.mkdir()
