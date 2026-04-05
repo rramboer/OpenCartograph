@@ -55,8 +55,8 @@ RASTER_DPI = 300
 QUALITY_PRESETS: dict[str, tuple[float, float, int]] = {
     "low": (6.0, 8.0, 150),
     "standard": (12.0, 16.0, 300),
-    "high": (16.0, 21.0, 400),
-    "ultra": (18.0, 24.0, 600),
+    "high": (16.0, 20.0, 400),
+    "ultra": (18.0, 20.0, 600),
 }
 
 # Text vertical positions (fraction of axes height)
