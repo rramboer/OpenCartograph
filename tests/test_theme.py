@@ -115,7 +115,10 @@ class TestLoadTheme:
         themes = tmp_path / "themes"
         themes.mkdir()
         link = themes / "escape"
-        link.symlink_to(tmp_path.parent)
+        try:
+            link.symlink_to(tmp_path.parent)
+        except (OSError, NotImplementedError) as exc:
+            pytest.skip(f"Symlinks not supported: {exc}")
         secret = tmp_path.parent / "secret.json"
         secret.write_text('{"name": "Secret"}')
         with pytest.raises(ValueError, match="resolves outside"):
