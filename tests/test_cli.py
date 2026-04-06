@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from unittest.mock import patch
 
 import pytest
@@ -214,3 +215,31 @@ class TestMain:
     def test_invalid_theme_returns_1(self):
         result = main(["--city", "Paris", "--country", "France", "--theme", "nonexistent_theme_xyz"])
         assert result == 1
+
+    def test_show_date_passes_formatted_date_to_config(self):
+        coords = Coordinates(latitude=48.8, longitude=2.3)
+        with patch("opencartograph.cli.get_coordinates", return_value=coords), \
+             patch("opencartograph.cli.compose_poster") as mock_compose, \
+             patch("opencartograph.cli.date") as mock_date:
+            mock_date.today.return_value = date(2026, 1, 15)
+            mock_date.side_effect = lambda *a, **kw: date(*a, **kw)
+            main(["--city", "Paris", "--country", "France", "--show-date"])
+            config = mock_compose.call_args[0][0]
+            assert config.date_text == "January 15, 2026"
+
+    def test_no_show_date_leaves_date_text_none(self):
+        coords = Coordinates(latitude=48.8, longitude=2.3)
+        with patch("opencartograph.cli.get_coordinates", return_value=coords), \
+             patch("opencartograph.cli.compose_poster") as mock_compose:
+            main(["--city", "Paris", "--country", "France"])
+            config = mock_compose.call_args[0][0]
+            assert config.date_text is None
+
+    def test_show_date_with_no_text_suppresses_all_text(self):
+        coords = Coordinates(latitude=48.8, longitude=2.3)
+        with patch("opencartograph.cli.get_coordinates", return_value=coords), \
+             patch("opencartograph.cli.compose_poster") as mock_compose:
+            main(["--city", "Paris", "--country", "France", "--show-date", "--no-text"])
+            config = mock_compose.call_args[0][0]
+            assert config.date_text is not None
+            assert config.no_text is True

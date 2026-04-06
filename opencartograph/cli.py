@@ -136,7 +136,7 @@ Examples:
     )
     parser.add_argument(
         "--no-text", dest="no_text", action="store_true",
-        help="Generate poster without any text (city name, country, coordinates, attribution)",
+        help="Generate poster without any text overlay",
     )
     parser.add_argument(
         "--show-date", dest="show_date", action="store_true",
