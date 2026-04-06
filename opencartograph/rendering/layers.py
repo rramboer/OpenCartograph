@@ -224,7 +224,7 @@ def render_typography(
         fontproperties=font_coords, zorder=zorder,
     )
 
-    # Date (optional, resolved by CLI)
+    # Date
     if config.date_text is not None:
         ax.text(
             0.5, constants.TEXT_Y_DATE, config.date_text,
