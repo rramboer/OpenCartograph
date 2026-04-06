@@ -235,7 +235,7 @@ class TestMain:
             config = mock_compose.call_args[0][0]
             assert config.date_text is None
 
-    def test_show_date_with_no_text_suppresses_all_text(self):
+    def test_show_date_with_no_text_sets_both_config_fields(self):
         coords = Coordinates(latitude=48.8, longitude=2.3)
         with patch("opencartograph.cli.get_coordinates", return_value=coords), \
              patch("opencartograph.cli.compose_poster") as mock_compose:
