@@ -1,8 +1,8 @@
 """
 Theme loading and management.
 
-Themes are JSON files in the themes/ directory that define colors for
-all visual elements of the poster.
+Themes are JSON files in the themes/ directory (including subdirectories)
+that define colors for all visual elements of the poster.
 """
 
 from __future__ import annotations
@@ -11,19 +11,24 @@ import json
 import os
 from pathlib import Path
 
+import logging
+
 from . import constants
 from .models import Theme
+
+logger = logging.getLogger(__name__)
 
 
 def get_available_themes(themes_dir: Path | None = None) -> list[str]:
     """
-    Scan the themes directory and return a list of available theme names.
+    Scan the themes directory recursively and return available theme names.
 
     Args:
         themes_dir: Override themes directory path
 
     Returns:
-        Sorted list of theme names (without .json extension)
+        Sorted list of theme names (without .json extension).
+        Subdirectory themes use forward-slash separators (e.g., "custom/ocean").
     """
     themes_dir = themes_dir or constants.THEMES_DIR
     if not os.path.exists(themes_dir):
@@ -31,11 +36,15 @@ def get_available_themes(themes_dir: Path | None = None) -> list[str]:
         return []
 
     themes = []
-    for dirpath, _dirnames, filenames in os.walk(themes_dir):
+
+    def _walk_error(err: OSError) -> None:
+        logger.warning("Could not read themes directory entry: %s", err)
+
+    for dirpath, _dirnames, filenames in os.walk(themes_dir, onerror=_walk_error):
         for file in filenames:
             if file.endswith(".json"):
                 rel = os.path.relpath(os.path.join(dirpath, file), themes_dir)
-                # Use forward slash as separator and strip .json
+                # Normalize to forward-slash names for platform independence
                 name = rel.replace(os.sep, "/")[:-5]
                 themes.append(name)
     return sorted(themes)
@@ -48,20 +57,34 @@ def load_theme(
     Load theme from JSON file in themes directory.
 
     Args:
-        theme_name: Name of the theme (without .json extension)
+        theme_name: Theme name, optionally including subdirectory path
+            with forward slashes (e.g., "custom/ocean"). Must not contain
+            ".." or "." path components.
         themes_dir: Override themes directory path
 
     Returns:
         Theme dataclass with all color values
+
+    Raises:
+        ValueError: If theme name is invalid or contains path traversal
+        FileNotFoundError: If theme file does not exist
     """
     themes_dir = themes_dir or constants.THEMES_DIR
     # Validate theme name: reject path traversal attempts
+    if "\\" in theme_name:
+        raise ValueError(f"Invalid theme name: {theme_name!r}")
     parts = [p for p in theme_name.split("/") if p]
-    if not parts or ".." in parts:
+    if not parts or any(p in (".", "..") for p in parts):
         raise ValueError(f"Invalid theme name: {theme_name!r}")
     theme_file = os.path.realpath(os.path.join(themes_dir, *parts) + ".json")
-    if not theme_file.startswith(os.path.realpath(str(themes_dir)) + os.sep):
-        raise ValueError(f"Invalid theme name: {theme_name!r}")
+    # Resolve symlinks and verify the file stays within themes_dir
+    real_themes = os.path.realpath(str(themes_dir))
+    if not real_themes.endswith(os.sep):
+        real_themes += os.sep
+    if not theme_file.startswith(real_themes):
+        raise ValueError(
+            f"Theme '{theme_name}' resolves outside the themes directory"
+        )
 
     if not os.path.exists(theme_file):
         available = get_available_themes(themes_dir)
@@ -78,8 +101,8 @@ def load_theme(
 
     try:
         theme = Theme.from_dict(data)
-    except KeyError as e:
-        raise ValueError(f"Theme file '{theme_file}' is missing required field: {e}") from e
+    except (KeyError, TypeError) as e:
+        raise ValueError(f"Theme file '{theme_file}' has invalid structure: {e}") from e
 
     print(f"\u2713 Loaded theme: {data.get('name', theme_name)}")
     if "description" in data:
@@ -110,9 +133,10 @@ def list_themes(themes_dir: Path | None = None) -> None:
                 display_name = theme_data.get("name", theme_name)
                 description = theme_data.get("description", "")
         except (OSError, json.JSONDecodeError) as e:
-            print(f"  Warning: Could not read theme file '{theme_name}.json': {e}")
-            display_name = theme_name
-            description = "(error reading theme file)"
+            print(f"  {theme_name}")
+            print(f"    WARNING: Could not read '{theme_path}': {e}")
+            print()
+            continue
         print(f"  {theme_name}")
         print(f"    {display_name}")
         if description:
