@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -45,6 +46,23 @@ class TestGetAvailableThemes:
         assert "top" in result
         assert "custom/deep" in result
 
+    def test_finds_deeply_nested_themes(self, tmp_path):
+        themes = tmp_path / "themes"
+        deep = themes / "a" / "b" / "c"
+        deep.mkdir(parents=True)
+        (deep / "nested.json").write_text('{"name": "Nested"}')
+        result = get_available_themes(themes)
+        assert "a/b/c/nested" in result
+
+    def test_ignores_non_json_in_subdirectories(self, tmp_path):
+        themes = tmp_path / "themes"
+        sub = themes / "custom"
+        sub.mkdir(parents=True)
+        (sub / "readme.txt").write_text("not a theme")
+        (sub / "valid.json").write_text('{"name": "Valid"}')
+        result = get_available_themes(themes)
+        assert result == ["custom/valid"]
+
     def test_subdirectory_themes_sorted(self, tmp_path):
         themes = tmp_path / "themes"
         themes.mkdir()
@@ -62,7 +80,6 @@ class TestLoadTheme:
         assert theme.name == "Alpha"
 
     def test_loads_subdirectory_theme(self, tmp_path, sample_theme_data):
-        import json
         themes = tmp_path / "themes"
         sub = themes / "custom"
         sub.mkdir(parents=True)
@@ -78,22 +95,46 @@ class TestLoadTheme:
         with pytest.raises(ValueError, match="Invalid theme name"):
             load_theme("custom/../../../etc/passwd", tmp_path)
 
+    def test_empty_theme_name_rejected(self, tmp_path):
+        with pytest.raises(ValueError, match="Invalid theme name"):
+            load_theme("", tmp_path)
+
+    def test_dot_theme_name_rejected(self, tmp_path):
+        with pytest.raises(ValueError, match="Invalid theme name"):
+            load_theme(".", tmp_path)
+
+    def test_slash_only_theme_name_rejected(self, tmp_path):
+        with pytest.raises(ValueError, match="Invalid theme name"):
+            load_theme("///", tmp_path)
+
+    def test_backslash_traversal_rejected(self, tmp_path):
+        with pytest.raises(ValueError, match="Invalid theme name"):
+            load_theme("custom\\..\\..\\etc\\passwd", tmp_path)
+
+    def test_symlink_escape_rejected(self, tmp_path):
+        themes = tmp_path / "themes"
+        themes.mkdir()
+        link = themes / "escape"
+        link.symlink_to(tmp_path.parent)
+        secret = tmp_path.parent / "secret.json"
+        secret.write_text('{"name": "Secret"}')
+        with pytest.raises(ValueError, match="resolves outside"):
+            load_theme("escape/secret", themes)
+
     def test_missing_theme_raises_error(self, tmp_path):
         with pytest.raises(FileNotFoundError, match="not found"):
             load_theme("nonexistent", tmp_path)
 
     def test_invalid_json_raises_valueerror(self, tmp_path):
-        import pytest
         bad_file = tmp_path / "broken.json"
         bad_file.write_text("{invalid json")
         with pytest.raises(ValueError, match="invalid JSON"):
             load_theme("broken", tmp_path)
 
     def test_missing_required_field_raises_valueerror(self, tmp_path):
-        import pytest
         incomplete = tmp_path / "incomplete.json"
         incomplete.write_text('{"name": "Test", "description": "Missing fields"}')
-        with pytest.raises(ValueError, match="missing required field"):
+        with pytest.raises(ValueError, match="invalid structure"):
             load_theme("incomplete", tmp_path)
 
     def test_theme_has_road_colors(self, themes_dir):
@@ -107,6 +148,25 @@ class TestListThemes:
         captured = capsys.readouterr()
         assert "alpha" in captured.out
         assert "beta" in captured.out
+
+    def test_prints_subdirectory_themes(self, tmp_path, capsys, sample_theme_data):
+        themes = tmp_path / "themes"
+        sub = themes / "custom"
+        sub.mkdir(parents=True)
+        (sub / "deep.json").write_text(json.dumps(sample_theme_data))
+        list_themes(themes)
+        captured = capsys.readouterr()
+        assert "custom/deep" in captured.out
+
+    def test_corrupt_theme_shows_warning(self, tmp_path, capsys):
+        themes = tmp_path / "themes"
+        sub = themes / "custom"
+        sub.mkdir(parents=True)
+        (sub / "broken.json").write_text("{invalid json")
+        list_themes(themes)
+        captured = capsys.readouterr()
+        assert "WARNING" in captured.out
+        assert "custom/broken" in captured.out
 
     def test_empty_dir(self, tmp_path, capsys):
         empty = tmp_path / "empty"
