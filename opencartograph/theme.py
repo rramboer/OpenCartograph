@@ -76,12 +76,14 @@ def load_theme(
     parts = [p for p in theme_name.split("/") if p]
     if not parts or any(p in (".", "..") for p in parts):
         raise ValueError(f"Invalid theme name: {theme_name!r}")
-    theme_file = os.path.realpath(os.path.join(themes_dir, *parts) + ".json")
     # Resolve symlinks and verify the file stays within themes_dir
-    real_themes = os.path.realpath(str(themes_dir))
-    if not real_themes.endswith(os.sep):
-        real_themes += os.sep
-    if not theme_file.startswith(real_themes):
+    resolved_themes_dir = Path(themes_dir).resolve()
+    theme_file = str(
+        (resolved_themes_dir / Path(*parts)).with_suffix(".json").resolve()
+    )
+    try:
+        Path(theme_file).relative_to(resolved_themes_dir)
+    except ValueError:
         raise ValueError(
             f"Theme '{theme_name}' resolves outside the themes directory"
         )
@@ -133,8 +135,9 @@ def list_themes(themes_dir: Path | None = None) -> None:
                 display_name = theme_data.get("name", theme_name)
                 description = theme_data.get("description", "")
         except (OSError, json.JSONDecodeError) as e:
+            logger.debug("Could not read theme file '%s': %s", theme_path, e)
             print(f"  {theme_name}")
-            print(f"    WARNING: Could not read '{theme_path}': {e}")
+            print(f"    WARNING: Could not read theme '{theme_name}': {e}")
             print()
             continue
         print(f"  {theme_name}")
