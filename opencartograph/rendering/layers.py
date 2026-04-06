@@ -177,7 +177,7 @@ def render_typography(
     default_fonts: FontSet | None,
 ) -> None:
     """
-    Render city name, country, coordinates, divider line, and attribution.
+    Render city name, country, coordinates, optional date, divider line, and attribution.
 
     Args:
         ax: Matplotlib axes
