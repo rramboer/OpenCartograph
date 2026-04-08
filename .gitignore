@@ -1,5 +1,6 @@
 cache/*
 output/
+fonts/cache/
 
 # Virtual environments
 env/
