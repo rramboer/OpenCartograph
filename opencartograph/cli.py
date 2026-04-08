@@ -147,6 +147,18 @@ Examples:
         help="Show OpenStreetMap attribution text in the bottom right corner",
     )
     parser.add_argument(
+        "--orientation-offset", "-O", type=float, default=0.0,
+        help="Rotate the map by this many degrees clockwise (range: -180 to 180)",
+    )
+    parser.add_argument(
+        "--show-north", dest="show_north", action="store_true", default=None,
+        help="Show a north compass badge (default: auto-enabled when map is rotated)",
+    )
+    parser.add_argument(
+        "--hide-north", dest="hide_north", action="store_true",
+        help="Hide the north compass badge even when map is rotated",
+    )
+    parser.add_argument(
         "--line-scale", type=float, default=1.0,
         help="Scale factor for road line widths (default: 1.0). "
              "Use values >1 for thicker roads, <1 for thinner. Must be positive.",
@@ -237,6 +249,18 @@ def main(argv: list[str] | None = None) -> int:
         print("Error: --line-scale must be a positive number.")
         return 1
 
+    if not -180 <= args.orientation_offset <= 180:
+        print("Error: --orientation-offset must be between -180 and 180.")
+        return 1
+
+    # Resolve show_north: auto-enable when rotated, unless --hide-north
+    if args.hide_north:
+        show_north = False
+    elif args.show_north is None:
+        show_north = args.orientation_offset != 0
+    else:
+        show_north = args.show_north
+
     available_themes = get_available_themes()
     if not available_themes:
         print("No themes found in 'themes/' directory.")
@@ -308,6 +332,8 @@ def main(argv: list[str] | None = None) -> int:
                 display_country=display_country,
                 no_text=args.no_text,
                 show_attribution=args.show_attribution,
+                orientation_offset=args.orientation_offset,
+                show_north=show_north,
                 line_scale=args.line_scale,
                 date_text=date.today().strftime("%B %d, %Y") if args.show_date else None,
                 dpi=dpi,

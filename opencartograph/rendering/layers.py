@@ -7,8 +7,6 @@ Layers are called in order by the pipeline orchestrator.
 
 from __future__ import annotations
 
-from typing import Any
-
 import matplotlib.colors as mcolors
 import numpy as np
 import osmnx as ox
@@ -25,17 +23,17 @@ from ..text import compute_city_font_size, format_city_display, make_font
 def _render_polygon_layer(
     gdf: GeoDataFrame | None,
     ax: Axes,
-    crs: Any,
     facecolor: str,
     zorder: float,
 ) -> None:
     """
-    Filter to polygons, project, and plot a GeoDataFrame.
+    Filter to polygons and plot a GeoDataFrame.
+
+    Expects already-projected data (metric CRS).
 
     Args:
         gdf: GeoDataFrame of features (may be None or empty)
         ax: Matplotlib axes to plot on
-        crs: Target CRS for projection
         facecolor: Fill color for polygons
         zorder: Z-order for layer stacking
     """
@@ -44,12 +42,7 @@ def _render_polygon_layer(
     polys = gdf[gdf.geometry.type.isin(["Polygon", "MultiPolygon"])]
     if polys.empty:
         return
-    try:
-        polys = ox.projection.project_gdf(polys)
-    except (ValueError, RuntimeError) as e:
-        print(f"  Warning: GDF projection failed ({e}), using graph CRS fallback")
-        polys = polys.to_crs(crs)
-    polys = polys[polys.geometry.area >= constants.MIN_POLYGON_AREA_M2]
+    polys = polys[polys.geometry.is_valid & (polys.geometry.area >= constants.MIN_POLYGON_AREA_M2)]
     if polys.empty:
         return
     polys.plot(ax=ax, facecolor=facecolor, edgecolor="none", zorder=zorder)
@@ -58,12 +51,11 @@ def _render_polygon_layer(
 def render_water(
     ax: Axes,
     water: GeoDataFrame | None,
-    g_proj: MultiDiGraph,
     config: PosterConfig,
 ) -> None:
     """Render water polygons layer."""
     _render_polygon_layer(
-        water, ax, g_proj.graph["crs"],
+        water, ax,
         config.theme.water, constants.ZORDER_WATER,
     )
 
@@ -71,12 +63,11 @@ def render_water(
 def render_parks(
     ax: Axes,
     parks: GeoDataFrame | None,
-    g_proj: MultiDiGraph,
     config: PosterConfig,
 ) -> None:
     """Render parks/green space polygons layer."""
     _render_polygon_layer(
-        parks, ax, g_proj.graph["crs"],
+        parks, ax,
         config.theme.parks, constants.ZORDER_PARKS,
     )
 

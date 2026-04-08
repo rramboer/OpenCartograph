@@ -25,7 +25,9 @@ from .layers import (
     render_typography,
     render_water,
 )
+from .compass import draw_north_badge
 from .ocean import build_ocean_polygons, render_ocean
+from .rotation import get_projected_center, rotate_features, rotate_graph
 from .viewport import get_crop_limits, setup_figure
 
 
@@ -100,6 +102,16 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
     return MapData(graph=g, water=water, parks=parks, coastline=coastline)
 
 
+def _project_features(gdf: GeoDataFrame | None, crs: str) -> GeoDataFrame | None:
+    """Project a GeoDataFrame to the target CRS, returning None if empty."""
+    if gdf is None or gdf.empty:
+        return gdf
+    try:
+        return ox.projection.project_gdf(gdf)
+    except (ValueError, RuntimeError):
+        return gdf.to_crs(crs)
+
+
 def compose_poster(
     config: PosterConfig, default_fonts: FontSet | None = None
 ) -> str:
@@ -131,6 +143,22 @@ def compose_poster(
 
     # Project graph to metric CRS
     g_proj = ox.project_graph(map_data.graph)
+    crs = g_proj.graph["crs"]
+
+    # Project feature layers to the same metric CRS
+    proj_water = _project_features(map_data.water, crs)
+    proj_parks = _project_features(map_data.parks, crs)
+    proj_coastline = _project_features(map_data.coastline, crs)
+
+    # Apply rotation if requested (in metric space, before crop limits)
+    if config.orientation_offset != 0:
+        cx, cy = get_projected_center(config.center, crs)
+        rotate_graph(g_proj, cx, cy, config.orientation_offset)
+        proj_water = rotate_features(proj_water, cx, cy, config.orientation_offset)
+        proj_parks = rotate_features(proj_parks, cx, cy, config.orientation_offset)
+        proj_coastline = rotate_features(
+            proj_coastline, cx, cy, config.orientation_offset,
+        )
 
     # Compute viewport crop limits early (ocean polygons need them)
     crop_xlim, crop_ylim = get_crop_limits(
@@ -139,13 +167,13 @@ def compose_poster(
 
     # Build and render ocean from coastline data
     ocean_polys = build_ocean_polygons(
-        map_data.coastline, g_proj.graph["crs"], crop_xlim, crop_ylim,
+        proj_coastline, crs, crop_xlim, crop_ylim,
     )
     render_ocean(ax, ocean_polys, config.theme.water)
 
-    # Render layers in order
-    render_water(ax, map_data.water, g_proj, config)
-    render_parks(ax, map_data.parks, g_proj, config)
+    # Render layers in order (already projected)
+    render_water(ax, proj_water, config)
+    render_parks(ax, proj_parks, config)
     render_roads(ax, g_proj, config)
 
     # Apply viewport crop
@@ -155,6 +183,9 @@ def compose_poster(
     render_gradients(ax, config)
     if not config.no_text:
         render_typography(ax, config, default_fonts)
+
+    if config.show_north:
+        draw_north_badge(ax, config.orientation_offset, config.theme.text)
 
     # Save and cleanup
     save_poster(fig, config)
