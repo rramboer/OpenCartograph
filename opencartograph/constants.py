@@ -98,9 +98,13 @@ ATTRIBUTION_TEXT = "\u00a9 OpenStreetMap contributors"
 ATTRIBUTION_ALPHA = 0.5
 COORDS_ALPHA = 0.7
 
+# Minimum area (in projected m²) for polygon features to be rendered.
+# Filters out tiny water bodies (fountains, pools) that appear as dots.
+MIN_POLYGON_AREA_M2 = 5000
+
 # Z-order values for rendering layers
 ZORDER_OCEAN = 0.3
-ZORDER_WATER = 0.5
+ZORDER_WATER = 0.9
 ZORDER_PARKS = 0.8
 ZORDER_GRADIENT = 10
 ZORDER_TEXT = 11

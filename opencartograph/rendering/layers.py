@@ -49,6 +49,9 @@ def _render_polygon_layer(
     except (ValueError, RuntimeError) as e:
         print(f"  Warning: GDF projection failed ({e}), using graph CRS fallback")
         polys = polys.to_crs(crs)
+    polys = polys[polys.geometry.area >= constants.MIN_POLYGON_AREA_M2]
+    if polys.empty:
+        return
     polys.plot(ax=ax, facecolor=facecolor, edgecolor="none", zorder=zorder)
 
 
