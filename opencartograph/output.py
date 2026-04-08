@@ -57,7 +57,7 @@ def save_poster(fig: Figure, config: PosterConfig) -> None:
     save_kwargs: dict = dict(
         facecolor=config.theme.bg,
         bbox_inches="tight",
-        pad_inches=0.05,
+        pad_inches=0,
     )
 
     # DPI matters for raster formats and rasterized elements in PDF
