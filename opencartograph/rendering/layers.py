@@ -245,12 +245,13 @@ def render_typography(
     )
 
     # Attribution (bottom right) — always uses default fonts if available
-    attr_fonts = default_fonts or active_fonts
-    font_attr = make_font(attr_fonts, "light", constants.BASE_FONT_ATTR)
-    ax.text(
-        constants.TEXT_X_ATTR, constants.TEXT_Y_ATTR,
-        constants.ATTRIBUTION_TEXT,
-        transform=ax.transAxes, color=text_color,
-        alpha=constants.ATTRIBUTION_ALPHA, ha="right", va="bottom",
-        fontproperties=font_attr, zorder=zorder,
-    )
+    if config.show_attribution:
+        attr_fonts = default_fonts or active_fonts
+        font_attr = make_font(attr_fonts, "light", constants.BASE_FONT_ATTR)
+        ax.text(
+            constants.TEXT_X_ATTR, constants.TEXT_Y_ATTR,
+            constants.ATTRIBUTION_TEXT,
+            transform=ax.transAxes, color=text_color,
+            alpha=constants.ATTRIBUTION_ALPHA, ha="right", va="bottom",
+            fontproperties=font_attr, zorder=zorder,
+        )

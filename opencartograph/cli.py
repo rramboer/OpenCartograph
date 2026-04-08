@@ -143,6 +143,10 @@ Examples:
         help="Display the current date on the poster (below coordinates)",
     )
     parser.add_argument(
+        "--show-attribution", dest="show_attribution", action="store_true",
+        help="Show OpenStreetMap attribution text in the bottom right corner",
+    )
+    parser.add_argument(
         "--line-scale", type=float, default=1.0,
         help="Scale factor for road line widths (default: 1.0). "
              "Use values >1 for thicker roads, <1 for thinner. Must be positive.",
@@ -303,6 +307,7 @@ def main(argv: list[str] | None = None) -> int:
                 display_city=display_city,
                 display_country=display_country,
                 no_text=args.no_text,
+                show_attribution=args.show_attribution,
                 line_scale=args.line_scale,
                 date_text=date.today().strftime("%B %d, %Y") if args.show_date else None,
                 dpi=dpi,
