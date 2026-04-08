@@ -118,6 +118,10 @@ Examples:
         help="List all available themes",
     )
     parser.add_argument(
+        "--theme-swatches", action="store_true",
+        help="Generate a color swatch PNG showing all themes side by side",
+    )
+    parser.add_argument(
         "--display-city", "-dc", type=str,
         help="Custom display name for city (for i18n support)",
     )
@@ -200,6 +204,11 @@ def main(argv: list[str] | None = None) -> int:
     # List themes if requested
     if args.list_themes:
         list_themes()
+        return 0
+
+    if args.theme_swatches:
+        from .swatches import generate_swatches
+        generate_swatches(args.output_dir)
         return 0
 
     # Validate required arguments
