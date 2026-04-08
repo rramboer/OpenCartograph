@@ -112,6 +112,7 @@ class PosterConfig:
     display_city: str
     display_country: str
     no_text: bool = False
+    show_attribution: bool = False
     line_scale: float = 1.0
     date_text: str | None = None
     dpi: int = constants.RASTER_DPI
