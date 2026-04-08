@@ -111,6 +111,6 @@ ZORDER_TEXT = 11
 ZORDER_COMPASS = 13
 
 # Compass badge positioning (fraction of map extent)
-COMPASS_X_FRAC = 0.08
-COMPASS_Y_FRAC = 0.90
+COMPASS_X_FRAC = 0.06
+COMPASS_Y_FRAC = 0.06
 COMPASS_SIZE_FRAC = 0.05
