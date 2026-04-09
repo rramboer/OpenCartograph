@@ -32,7 +32,9 @@ class TestComposePoster:
         mock_save, mock_plt, sample_config,
     ):
         mock_fetch.return_value = MapData(
-            graph=MagicMock(), water=None, parks=None, coastline=None,
+            graph=MagicMock(), water=None, parks=None,
+            national_parks=None, airports=None, runways=None,
+            buildings=None, stadiums=None, coastline=None,
         )
         mock_setup.return_value = (MagicMock(), MagicMock())
 
@@ -62,7 +64,9 @@ class TestComposePoster:
         mock_save, mock_plt, sample_config,
     ):
         mock_fetch.return_value = MapData(
-            graph=MagicMock(), water=None, parks=None, coastline=None,
+            graph=MagicMock(), water=None, parks=None,
+            national_parks=None, airports=None, runways=None,
+            buildings=None, stadiums=None, coastline=None,
         )
         mock_setup.return_value = (MagicMock(), MagicMock())
 
