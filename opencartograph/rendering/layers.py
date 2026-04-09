@@ -104,13 +104,15 @@ def render_runways(
     runways: GeoDataFrame | None,
     config: PosterConfig,
 ) -> None:
-    """Render airport runways/taxiways as lines."""
+    """
+    Render airport runways/taxiways as lines.
+
+    Expects already-filtered to LineString/MultiLineString geometries
+    by the pipeline.
+    """
     if runways is None or runways.empty:
         return
-    lines = runways[runways.geometry.type.isin(["LineString", "MultiLineString"])]
-    if lines.empty:
-        return
-    lines.plot(
+    runways.plot(
         ax=ax, color=config.theme.runways,
         linewidth=1.5 * config.line_scale, zorder=constants.ZORDER_RUNWAYS,
     )
