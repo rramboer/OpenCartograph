@@ -25,6 +25,7 @@ def _render_polygon_layer(
     ax: Axes,
     facecolor: str,
     zorder: float,
+    min_area_m2: float = constants.MIN_POLYGON_AREA_M2,
 ) -> None:
     """
     Filter to polygons and plot a GeoDataFrame.
@@ -36,13 +37,15 @@ def _render_polygon_layer(
         ax: Matplotlib axes to plot on
         facecolor: Fill color for polygons
         zorder: Z-order for layer stacking
+        min_area_m2: Minimum polygon area in square meters (default filters
+            out tiny features like fountains; pass 0 to disable filtering)
     """
     if gdf is None or gdf.empty:
         return
     polys = gdf[gdf.geometry.type.isin(["Polygon", "MultiPolygon"])]
     if polys.empty:
         return
-    polys = polys[polys.geometry.is_valid & (polys.geometry.area >= constants.MIN_POLYGON_AREA_M2)]
+    polys = polys[polys.geometry.is_valid & (polys.geometry.area >= min_area_m2)]
     if polys.empty:
         return
     polys.plot(ax=ax, facecolor=facecolor, edgecolor="none", zorder=zorder)
@@ -122,6 +125,7 @@ def render_buildings(
     _render_polygon_layer(
         buildings, ax,
         config.theme.buildings, constants.ZORDER_BUILDINGS,
+        min_area_m2=0,
     )
 
 
