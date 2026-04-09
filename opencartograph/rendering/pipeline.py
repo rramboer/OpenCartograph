@@ -88,14 +88,14 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
         unit="step",
         bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt}",
     ) as pbar:
-        # 1. Fetch Street Network
+        # Fetch Street Network
         pbar.set_description("Downloading street network")
         g = fetch_graph(config.center, compensated_dist)
         if g is None:
             raise RuntimeError("Failed to retrieve street network data.")
         pbar.update(1)
 
-        # 2. Fetch Water Features
+        # Fetch Water Features
         pbar.set_description("Downloading water features")
         water = fetch_features(
             config.center,
@@ -105,7 +105,7 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
         )
         pbar.update(1)
 
-        # 3. Fetch Parks
+        # Fetch Parks
         pbar.set_description("Downloading parks/green spaces")
         parks = fetch_features(
             config.center,
@@ -118,7 +118,7 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
         # Track which explicitly-requested optional layers failed to fetch
         failed_layers: list[str] = []
 
-        # 4. Fetch National Parks (optional)
+        # Fetch National Parks (optional)
         if config.show_national_parks:
             pbar.set_description("Downloading national parks")
             national_parks = fetch_features(
@@ -131,7 +131,7 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
                 failed_layers.append("national parks")
             pbar.update(1)
 
-        # 5. Fetch Airports (optional; combined polygons + lines)
+        # Fetch Airports (optional; combined polygons + lines)
         if config.show_airports:
             pbar.set_description("Downloading airports")
             aero = fetch_features(
