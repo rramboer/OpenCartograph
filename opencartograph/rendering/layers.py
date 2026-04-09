@@ -112,7 +112,7 @@ def render_runways(
         return
     lines.plot(
         ax=ax, color=config.theme.runways,
-        linewidth=1.5, zorder=constants.ZORDER_RUNWAYS,
+        linewidth=1.5 * config.line_scale, zorder=constants.ZORDER_RUNWAYS,
     )
 
 
