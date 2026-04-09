@@ -115,6 +115,9 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
         )
         pbar.update(1)
 
+        # Track which explicitly-requested optional layers failed to fetch
+        failed_layers: list[str] = []
+
         # 4. Fetch National Parks (optional)
         if config.show_national_parks:
             pbar.set_description("Downloading national parks")
@@ -124,6 +127,8 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
                 tags={"boundary": ["national_park", "protected_area"], "leisure": "nature_reserve"},
                 name="national_parks",
             )
+            if national_parks is None:
+                failed_layers.append("national parks")
             pbar.update(1)
 
         # 5. Fetch Airports (optional; combined polygons + lines)
@@ -135,7 +140,9 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
                 tags={"aeroway": ["aerodrome", "apron", "helipad", "runway", "taxiway"]},
                 name="aeroway",
             )
-            if aero is not None and not aero.empty:
+            if aero is None:
+                failed_layers.append("airports")
+            elif not aero.empty:
                 aero_type = aero.geometry.type
                 airports = aero[aero_type.isin(["Polygon", "MultiPolygon"])]
                 runways = aero[aero_type.isin(["LineString", "MultiLineString"])]
@@ -154,6 +161,8 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
                 tags={"building": True},
                 name="buildings",
             )
+            if buildings is None:
+                failed_layers.append("buildings")
             pbar.update(1)
 
         # Fetch Stadiums (optional)
@@ -165,6 +174,8 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
                 tags={"leisure": ["stadium", "sports_centre"]},
                 name="stadiums",
             )
+            if stadiums is None:
+                failed_layers.append("stadiums")
             pbar.update(1)
 
         # Fetch Coastline
@@ -177,7 +188,13 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
         )
         pbar.update(1)
 
-    print("\u2713 All data retrieved successfully!")
+    if failed_layers:
+        print(
+            f"\u26a0 Warning: requested layer(s) failed to fetch and will be "
+            f"missing from the poster: {', '.join(failed_layers)}"
+        )
+    else:
+        print("\u2713 All data retrieved successfully!")
     return MapData(
         graph=g, water=water, parks=parks,
         national_parks=national_parks, airports=airports, runways=runways,
