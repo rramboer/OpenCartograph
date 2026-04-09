@@ -53,6 +53,11 @@ class Theme:
     gradient_color: str
     water: str
     parks: str
+    national_parks: str
+    airports: str
+    runways: str
+    buildings: str
+    stadiums: str
     roads: RoadColors
 
     @classmethod
@@ -66,6 +71,11 @@ class Theme:
             gradient_color=data["gradient_color"],
             water=data["water"],
             parks=data["parks"],
+            national_parks=data.get("national_parks", data["parks"]),
+            airports=data.get("airports", data["bg"]),
+            runways=data.get("runways", data.get("road_tertiary", "#888888")),
+            buildings=data.get("buildings", data.get("road_residential", "#CCCCCC")),
+            stadiums=data.get("stadiums", data["parks"]),
             roads=RoadColors(
                 motorway=data["road_motorway"],
                 primary=data["road_primary"],
@@ -113,6 +123,10 @@ class PosterConfig:
     display_country: str
     no_text: bool = False
     show_attribution: bool = False
+    show_airports: bool = False
+    show_national_parks: bool = False
+    show_buildings: bool = False
+    show_stadiums: bool = False
     orientation_offset: float = 0.0
     show_north: bool = False
     line_scale: float = 1.0

@@ -151,6 +151,22 @@ Examples:
         help="Show OpenStreetMap attribution text in the bottom right corner",
     )
     parser.add_argument(
+        "--airports", dest="show_airports", action="store_true",
+        help="Fetch and render airports, runways, and taxiways",
+    )
+    parser.add_argument(
+        "--natl-parks", dest="show_national_parks", action="store_true",
+        help="Fetch and render national parks and protected areas",
+    )
+    parser.add_argument(
+        "--buildings", dest="show_buildings", action="store_true",
+        help="Fetch and render building footprints (heavy for dense cities)",
+    )
+    parser.add_argument(
+        "--stadiums", dest="show_stadiums", action="store_true",
+        help="Fetch and render stadiums and sports venues",
+    )
+    parser.add_argument(
         "--orientation-offset", "-O", type=float, default=0.0,
         help="Rotate the map by this many degrees clockwise (range: -180 to 180)",
     )
@@ -341,6 +357,10 @@ def main(argv: list[str] | None = None) -> int:
                 display_country=display_country,
                 no_text=args.no_text,
                 show_attribution=args.show_attribution,
+                show_airports=args.show_airports,
+                show_national_parks=args.show_national_parks,
+                show_buildings=args.show_buildings,
+                show_stadiums=args.show_stadiums,
                 orientation_offset=args.orientation_offset,
                 show_north=show_north,
                 line_scale=args.line_scale,
