@@ -49,6 +49,11 @@ def _make_config(output_format: str = "png", dpi: int = 300, tmp_path: str = "/t
         gradient_color="#cccccc",
         water="#0000ff",
         parks="#00ff00",
+        national_parks="#008800",
+        airports="#ffff00",
+        runways="#888888",
+        buildings="#cccccc",
+        stadiums="#00ffaa",
         roads=RoadColors(
             motorway="#333", primary="#444", secondary="#555",
             tertiary="#666", residential="#777", default="#888",
