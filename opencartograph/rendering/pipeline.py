@@ -19,9 +19,14 @@ from ..osm import fetch_features, fetch_graph
 from ..output import save_poster
 from .layers import (
     apply_viewport,
+    render_airports,
+    render_buildings,
     render_gradients,
+    render_national_parks,
     render_parks,
     render_roads,
+    render_runways,
+    render_stadiums,
     render_typography,
     render_water,
 )
@@ -38,6 +43,11 @@ class MapData:
     graph: MultiDiGraph
     water: GeoDataFrame | None
     parks: GeoDataFrame | None
+    national_parks: GeoDataFrame | None
+    airports: GeoDataFrame | None
+    runways: GeoDataFrame | None
+    buildings: GeoDataFrame | None
+    stadiums: GeoDataFrame | None
     coastline: GeoDataFrame | None
 
 
@@ -55,8 +65,25 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
     Raises:
         RuntimeError: If street network data cannot be retrieved
     """
+    # Total steps depend on which optional layers are requested
+    total_steps = 4  # street, water, parks, coastline
+    if config.show_national_parks:
+        total_steps += 1
+    if config.show_airports:
+        total_steps += 1
+    if config.show_buildings:
+        total_steps += 1
+    if config.show_stadiums:
+        total_steps += 1
+
+    national_parks: GeoDataFrame | None = None
+    airports: GeoDataFrame | None = None
+    runways: GeoDataFrame | None = None
+    buildings: GeoDataFrame | None = None
+    stadiums: GeoDataFrame | None = None
+
     with tqdm(
-        total=4,
+        total=total_steps,
         desc="Fetching map data",
         unit="step",
         bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt}",
@@ -88,7 +115,59 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
         )
         pbar.update(1)
 
-        # 4. Fetch Coastline
+        # 4. Fetch National Parks (optional)
+        if config.show_national_parks:
+            pbar.set_description("Downloading national parks")
+            national_parks = fetch_features(
+                config.center,
+                compensated_dist,
+                tags={"boundary": ["national_park", "protected_area"], "leisure": "nature_reserve"},
+                name="national_parks",
+            )
+            pbar.update(1)
+
+        # 5. Fetch Airports (optional; combined polygons + lines)
+        if config.show_airports:
+            pbar.set_description("Downloading airports")
+            aero = fetch_features(
+                config.center,
+                compensated_dist,
+                tags={"aeroway": ["aerodrome", "apron", "helipad", "runway", "taxiway"]},
+                name="aeroway",
+            )
+            if aero is not None and not aero.empty:
+                aero_type = aero.geometry.type
+                airports = aero[aero_type.isin(["Polygon", "MultiPolygon"])]
+                runways = aero[aero_type.isin(["LineString", "MultiLineString"])]
+                if airports.empty:
+                    airports = None
+                if runways.empty:
+                    runways = None
+            pbar.update(1)
+
+        # Fetch Buildings (optional; heavy for dense cities)
+        if config.show_buildings:
+            pbar.set_description("Downloading buildings")
+            buildings = fetch_features(
+                config.center,
+                compensated_dist,
+                tags={"building": True},
+                name="buildings",
+            )
+            pbar.update(1)
+
+        # Fetch Stadiums (optional)
+        if config.show_stadiums:
+            pbar.set_description("Downloading stadiums")
+            stadiums = fetch_features(
+                config.center,
+                compensated_dist,
+                tags={"leisure": ["stadium", "sports_centre"]},
+                name="stadiums",
+            )
+            pbar.update(1)
+
+        # Fetch Coastline
         pbar.set_description("Downloading coastline")
         coastline = fetch_features(
             config.center,
@@ -99,7 +178,12 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
         pbar.update(1)
 
     print("\u2713 All data retrieved successfully!")
-    return MapData(graph=g, water=water, parks=parks, coastline=coastline)
+    return MapData(
+        graph=g, water=water, parks=parks,
+        national_parks=national_parks, airports=airports, runways=runways,
+        buildings=buildings, stadiums=stadiums,
+        coastline=coastline,
+    )
 
 
 def _project_features(gdf: GeoDataFrame | None, crs: str) -> GeoDataFrame | None:
@@ -148,6 +232,11 @@ def compose_poster(
     # Project feature layers to the same metric CRS
     proj_water = _project_features(map_data.water, crs)
     proj_parks = _project_features(map_data.parks, crs)
+    proj_national_parks = _project_features(map_data.national_parks, crs)
+    proj_airports = _project_features(map_data.airports, crs)
+    proj_runways = _project_features(map_data.runways, crs)
+    proj_buildings = _project_features(map_data.buildings, crs)
+    proj_stadiums = _project_features(map_data.stadiums, crs)
     proj_coastline = _project_features(map_data.coastline, crs)
 
     # Apply rotation if requested (in metric space, before crop limits)
@@ -156,6 +245,13 @@ def compose_poster(
         rotate_graph(g_proj, cx, cy, config.orientation_offset)
         proj_water = rotate_features(proj_water, cx, cy, config.orientation_offset)
         proj_parks = rotate_features(proj_parks, cx, cy, config.orientation_offset)
+        proj_national_parks = rotate_features(
+            proj_national_parks, cx, cy, config.orientation_offset,
+        )
+        proj_airports = rotate_features(proj_airports, cx, cy, config.orientation_offset)
+        proj_runways = rotate_features(proj_runways, cx, cy, config.orientation_offset)
+        proj_buildings = rotate_features(proj_buildings, cx, cy, config.orientation_offset)
+        proj_stadiums = rotate_features(proj_stadiums, cx, cy, config.orientation_offset)
         proj_coastline = rotate_features(
             proj_coastline, cx, cy, config.orientation_offset,
         )
@@ -172,8 +268,13 @@ def compose_poster(
     render_ocean(ax, ocean_polys, config.theme.water)
 
     # Render layers in order (already projected)
-    render_water(ax, proj_water, config)
+    render_national_parks(ax, proj_national_parks, config)
+    render_airports(ax, proj_airports, config)
     render_parks(ax, proj_parks, config)
+    render_stadiums(ax, proj_stadiums, config)
+    render_runways(ax, proj_runways, config)
+    render_water(ax, proj_water, config)
+    render_buildings(ax, proj_buildings, config)
     render_roads(ax, g_proj, config)
 
     # Apply viewport crop

@@ -72,6 +72,71 @@ def render_parks(
     )
 
 
+def render_national_parks(
+    ax: Axes,
+    national_parks: GeoDataFrame | None,
+    config: PosterConfig,
+) -> None:
+    """Render national park/protected area polygons layer."""
+    _render_polygon_layer(
+        national_parks, ax,
+        config.theme.national_parks, constants.ZORDER_NATIONAL_PARKS,
+    )
+
+
+def render_airports(
+    ax: Axes,
+    airports: GeoDataFrame | None,
+    config: PosterConfig,
+) -> None:
+    """Render airport ground polygons layer."""
+    _render_polygon_layer(
+        airports, ax,
+        config.theme.airports, constants.ZORDER_AIRPORTS,
+    )
+
+
+def render_runways(
+    ax: Axes,
+    runways: GeoDataFrame | None,
+    config: PosterConfig,
+) -> None:
+    """Render airport runways/taxiways as lines."""
+    if runways is None or runways.empty:
+        return
+    lines = runways[runways.geometry.type.isin(["LineString", "MultiLineString"])]
+    if lines.empty:
+        return
+    lines.plot(
+        ax=ax, color=config.theme.runways,
+        linewidth=1.5, zorder=constants.ZORDER_RUNWAYS,
+    )
+
+
+def render_buildings(
+    ax: Axes,
+    buildings: GeoDataFrame | None,
+    config: PosterConfig,
+) -> None:
+    """Render building footprint polygons layer."""
+    _render_polygon_layer(
+        buildings, ax,
+        config.theme.buildings, constants.ZORDER_BUILDINGS,
+    )
+
+
+def render_stadiums(
+    ax: Axes,
+    stadiums: GeoDataFrame | None,
+    config: PosterConfig,
+) -> None:
+    """Render stadium and sports venue polygons layer."""
+    _render_polygon_layer(
+        stadiums, ax,
+        config.theme.stadiums, constants.ZORDER_STADIUMS,
+    )
+
+
 def render_roads(
     ax: Axes,
     g_proj: MultiDiGraph,
