@@ -13,7 +13,6 @@ import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 
 from . import constants
-from .output import generate_output_filename
 
 COLOR_KEYS = [
     ("bg", "Background"),

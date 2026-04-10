@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import matplotlib
+
 matplotlib.use("Agg")
 
-import matplotlib.pyplot as plt
-import pytest
+import matplotlib.pyplot as plt  # noqa: E402
 
-from opencartograph.rendering.compass import draw_north_badge
+from opencartograph.rendering.compass import draw_north_badge  # noqa: E402
 
 
 class TestDrawNorthBadge:
