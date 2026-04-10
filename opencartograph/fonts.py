@@ -233,9 +233,9 @@ def load_fonts(
         print(f"Loading local font from: {font_path}")
         fonts = load_local_font(font_path)
         if fonts:
-            print(f"\u2713 Local font loaded successfully")
+            print("\u2713 Local font loaded successfully")
             return FontSet.from_dict(fonts)
-        print(f"\u26a0 Failed to load local font, falling back to Roboto")
+        print("\u26a0 Failed to load local font, falling back to Roboto")
 
     # Priority 3: Bundled Roboto
     fonts_dir = constants.FONTS_DIR
