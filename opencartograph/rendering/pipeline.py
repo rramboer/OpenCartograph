@@ -171,7 +171,7 @@ def fetch_map_data(config: PosterConfig, compensated_dist: int) -> MapData:
             stadiums = fetch_features(
                 config.center,
                 compensated_dist,
-                tags={"leisure": ["stadium", "sports_centre"]},
+                tags={"leisure": "stadium"},
                 name="stadiums",
             )
             if stadiums is None:
