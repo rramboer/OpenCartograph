@@ -135,6 +135,13 @@ Examples:
              "If not specified, uses local Roboto fonts.",
     )
     parser.add_argument(
+        "--font-path", type=str,
+        help="Path to a local font file or directory. Directory mode looks "
+             "for files with bold/regular/light markers in their names. "
+             "Supports .ttf, .otf, .woff, .woff2. "
+             "Used if --font-family is not specified or fails to load.",
+    )
+    parser.add_argument(
         "--format", "-f", default="png", choices=["png", "svg", "pdf"],
         help="Output format for the poster (default: png)",
     )
@@ -307,12 +314,15 @@ def main(argv: list[str] | None = None) -> int:
     # Load default fonts (Roboto)
     default_fonts = load_fonts()
 
-    # Load custom fonts if specified
+    # Load custom fonts if specified (Google family or local path)
     custom_fonts = None
-    if args.font_family:
-        custom_fonts = load_fonts(args.font_family)
+    if args.font_family or args.font_path:
+        custom_fonts = load_fonts(
+            font_family=args.font_family,
+            font_path=args.font_path,
+        )
         if not custom_fonts:
-            print(f"\u26a0 Failed to load '{args.font_family}', falling back to Roboto")
+            print("\u26a0 Failed to load custom font, falling back to Roboto")
 
     final_fonts = custom_fonts or default_fonts
     if final_fonts is None and not args.no_text:

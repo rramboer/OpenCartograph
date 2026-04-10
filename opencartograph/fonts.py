@@ -135,27 +135,109 @@ def download_google_font(
     return font_files if font_files else None
 
 
-def load_fonts(font_family: str | None = None) -> FontSet | None:
+FONT_EXTENSIONS = (".ttf", ".otf", ".woff", ".woff2")
+
+# Weight name patterns (case-insensitive substrings that indicate a weight)
+WEIGHT_PATTERNS = {
+    "bold": ("bold", "heavy", "black"),
+    "light": ("light", "thin"),
+    "regular": ("regular", "normal", "book", "medium"),
+}
+
+
+def load_local_font(font_path: str) -> Optional[dict[str, str]]:
     """
-    Load fonts from local directory or download from Google Fonts.
+    Load fonts from a local file or directory.
+
+    If `font_path` is a single font file, uses it for all three weights.
+    If `font_path` is a directory, searches for files matching bold/regular/
+    light weight patterns in their filenames. Files without a weight marker
+    are used as the regular fallback.
 
     Args:
-        font_family: Google Fonts family name (e.g., 'Noto Sans JP', 'Open Sans').
-                     If None, uses local Roboto fonts.
+        font_path: Path to a font file or directory containing fonts
+
+    Returns:
+        Dict with 'light', 'regular', 'bold' keys mapping to font file paths,
+        or None if loading fails
+    """
+    from pathlib import Path
+
+    path = Path(font_path).expanduser().resolve()
+    if not path.exists():
+        print(f"\u26a0 Font path not found: {path}")
+        return None
+
+    # Single file: use it for all weights
+    if path.is_file():
+        if path.suffix.lower() not in FONT_EXTENSIONS:
+            print(f"\u26a0 Unsupported font extension: {path.suffix}")
+            return None
+        p = str(path)
+        return {"bold": p, "regular": p, "light": p}
+
+    # Directory: search for weight-specific files
+    font_files = [
+        f for f in path.iterdir()
+        if f.is_file() and f.suffix.lower() in FONT_EXTENSIONS
+    ]
+    if not font_files:
+        print(f"\u26a0 No font files found in directory: {path}")
+        return None
+
+    matches: dict[str, str] = {}
+    for f in font_files:
+        name_lower = f.name.lower()
+        for weight, patterns in WEIGHT_PATTERNS.items():
+            if any(pat in name_lower for pat in patterns):
+                if weight not in matches:
+                    matches[weight] = str(f)
+                break
+
+    # Fill in missing weights with any available font
+    fallback = next(iter(matches.values()), str(font_files[0]))
+    for weight in ("bold", "regular", "light"):
+        if weight not in matches:
+            matches[weight] = fallback
+            print(f"  Using fallback for {weight} weight")
+
+    return matches
+
+
+def load_fonts(
+    font_family: str | None = None,
+    font_path: str | None = None,
+) -> FontSet | None:
+    """
+    Load fonts in priority order: font_family > font_path > bundled Roboto.
+
+    Args:
+        font_family: Google Fonts family name (e.g., 'Noto Sans JP'). Takes
+                     precedence over `font_path` if both are provided.
+        font_path: Path to a local font file or directory.
 
     Returns:
         FontSet with paths to font files, or None if all loading methods fail
     """
-    # If custom font family specified, try to download from Google Fonts
+    # Priority 1: Google Fonts
     if font_family and font_family.lower() != "roboto":
         print(f"Loading Google Font: {font_family}")
         fonts = download_google_font(font_family)
         if fonts:
             print(f"\u2713 Font '{font_family}' loaded successfully")
             return FontSet.from_dict(fonts)
-        print(f"\u26a0 Failed to load '{font_family}', falling back to local Roboto")
+        print(f"\u26a0 Failed to load '{font_family}', trying next font option")
 
-    # Default: Load local Roboto fonts
+    # Priority 2: Local font path
+    if font_path:
+        print(f"Loading local font from: {font_path}")
+        fonts = load_local_font(font_path)
+        if fonts:
+            print(f"\u2713 Local font loaded successfully")
+            return FontSet.from_dict(fonts)
+        print(f"\u26a0 Failed to load local font, falling back to Roboto")
+
+    # Priority 3: Bundled Roboto
     fonts_dir = constants.FONTS_DIR
     font_paths = {
         "bold": os.path.join(fonts_dir, "Roboto-Bold.ttf"),
@@ -163,7 +245,6 @@ def load_fonts(font_family: str | None = None) -> FontSet | None:
         "light": os.path.join(fonts_dir, "Roboto-Light.ttf"),
     }
 
-    # Verify fonts exist
     for _weight, path in font_paths.items():
         if not os.path.exists(path):
             print(f"\u26a0 Font not found: {path}")
