@@ -1,0 +1,20 @@
+{
+  "name": "Oxblood",
+  "description": "Deep blood red with cream accents - moody and intense",
+  "bg": "#1F0608",
+  "text": "#F0D4C0",
+  "gradient_color": "#1F0608",
+  "water": "#100204",
+  "parks": "#2A0C10",
+  "national_parks": "#38121A",
+  "airports": "#250A0C",
+  "runways": "#B05850",
+  "buildings": "#3A1418",
+  "stadiums": "#301014",
+  "road_motorway": "#E8C8A8",
+  "road_primary": "#D4A888",
+  "road_secondary": "#B8846A",
+  "road_tertiary": "#986450",
+  "road_residential": "#724838",
+  "road_default": "#986450"
+}

@@ -1,0 +1,20 @@
+{
+  "name": "Arctic",
+  "description": "Icy whites and pale blues - cool, clean, minimal winter aesthetic",
+  "bg": "#F4F8FB",
+  "text": "#3A5A7A",
+  "gradient_color": "#F4F8FB",
+  "water": "#D8E6F0",
+  "parks": "#E8EEF2",
+  "national_parks": "#D0DCE6",
+  "airports": "#EAF0F5",
+  "runways": "#8FA8BE",
+  "buildings": "#C8D4DE",
+  "stadiums": "#D4DEE6",
+  "road_motorway": "#2C4A6B",
+  "road_primary": "#4A6A8A",
+  "road_secondary": "#6A88A4",
+  "road_tertiary": "#8FA8BE",
+  "road_residential": "#B0C2D0",
+  "road_default": "#8FA8BE"
+}

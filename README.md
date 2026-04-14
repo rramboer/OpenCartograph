@@ -1,28 +1,40 @@
 # OpenCartograph
 
-An open-source cartographic rendering tool. Generate high-quality map visualizations for any location worldwide using OpenStreetMap data. Supports multiple visual themes, export formats, and fully customizable output.
-
-<img src="examples/singapore_neon_cyberpunk_20260118_153328.png" width="250">
-<img src="examples/dubai_midnight_blue_20260118_140807.png" width="250">
+An open-source cartographic rendering tool. Generate high-quality map posters for any location worldwide using OpenStreetMap data. 27 themes, multiple layer types, rotation, custom fonts, and resolutions up to 18×20" at 600 DPI.
 
 ## Examples
 
-| Country      | City           | Theme           | Poster |
-|:------------:|:--------------:|:---------------:|:------:|
-| USA          | San Francisco  | sunset          | <img src="examples/san_francisco_sunset_20260118_144726.png" width="250"> |
-| Spain        | Barcelona      | warm_beige      | <img src="examples/barcelona_warm_beige_20260118_140048.png" width="250"> |
-| Italy        | Venice         | blueprint       | <img src="examples/venice_blueprint_20260118_140505.png" width="250"> |
-| Japan        | Tokyo          | japanese_ink    | <img src="examples/tokyo_japanese_ink_20260118_142446.png" width="250"> |
-| India        | Mumbai         | contrast_zones  | <img src="examples/mumbai_contrast_zones_20260118_145843.png" width="250"> |
-| Morocco      | Marrakech      | terracotta      | <img src="examples/marrakech_terracotta_20260118_143253.png" width="250"> |
-| Singapore    | Singapore      | neon_cyberpunk  | <img src="examples/singapore_neon_cyberpunk_20260118_153328.png" width="250"> |
-| Australia    | Melbourne      | forest          | <img src="examples/melbourne_forest_20260118_153446.png" width="250"> |
-| UAE          | Dubai          | midnight_blue   | <img src="examples/dubai_midnight_blue_20260118_140807.png" width="250"> |
-| USA          | Seattle        | emerald         | <img src="examples/seattle_emerald_20260124_162244.png" width="250"> |
+|                                      City                                       |      Theme      |                Notes                |
+| :-----------------------------------------------------------------------------: | :-------------: | :---------------------------------: |
+|    <img src="examples/dubai_midnight_blue_20260118_140807.png" width="220">     |  Midnight Blue  |        Dubai — Palm Jumeirah        |
+|  <img src="examples/hong_kong_neon_cyberpunk_20260409_195640.png" width="220">  | Neon Cyberpunk  |              Hong Kong              |
+|      <img src="examples/reykjavik_arctic_20260413_133857.png" width="220">      |     Arctic      |              Reykjavík              |
+|      <img src="examples/miami_vaporwave_20260413_134319.png" width="220">       |    Vaporwave    |         Miami (rotated 20°)         |
+|       <img src="examples/vienna_crimson_20260413_135313.png" width="220">       |     Crimson     |               Vienna                |
+|      <img src="examples/seattle_espresso_20260413_135732.png" width="220">      |    Espresso     |               Seattle               |
+|        <img src="examples/delhi_butter_20260414_004320.png" width="220">        |     Butter      |       Delhi — Lutyens layout        |
+|     <img src="examples/singapore_oxblood_20260414_003835.png" width="220">      |     Oxblood     |              Singapore              |
+|        <img src="examples/london_noir_20260409_200022.png" width="220">         |      Noir       |               London                |
+|    <img src="examples/marrakech_terracotta_20260409_200730.png" width="220">    |   Terracotta    |              Marrakech              |
+|    <img src="examples/tokyo_contrast_zones_20260409_194415.png" width="220">    | Contrast Zones  |                Tokyo                |
+|     <img src="examples/kyoto_japanese_ink_20260409_195134.png" width="220">     |  Japanese Ink   |                Kyoto                |
+|       <img src="examples/seattle_forest_20260409_194918.png" width="220">       |     Forest      |               Seattle               |
+|      <img src="examples/portland_emerald_20260409_194846.png" width="220">      |     Emerald     |              Portland               |
+|      <img src="examples/barcelona_ocean_20260409_200256.png" width="220">       |      Ocean      |              Barcelona              |
+|     <img src="examples/los_angeles_sunset_20260409_200558.png" width="220">     |     Sunset      |     Los Angeles (with airports)     |
+|       <img src="examples/boston_autumn_20260409_193834.png" width="220">        |     Autumn      |               Boston                |
+|     <img src="examples/new_york_blueprint_20260409_193935.png" width="220">     |    Blueprint    |              New York               |
+|  <img src="examples/washington_copper_patina_20260409_194634.png" width="220">  |  Copper Patina  | Washington DC (with national parks) |
+| <img src="examples/copenhagen_monochrome_blue_20260409_195451.png" width="220"> | Monochrome Blue |             Copenhagen              |
+|   <img src="examples/chicago_gradient_roads_20260409_195041.png" width="220">   | Gradient Roads  |               Chicago               |
+|   <img src="examples/amsterdam_pastel_dream_20260409_200443.png" width="220">   |  Pastel Dream   |              Amsterdam              |
+|      <img src="examples/rome_warm_beige_20260409_200810.png" width="220">       |   Warm Beige    |                Rome                 |
+|  <img src="examples/ann_arbor_midnight_blue_20260410_011524.png" width="220">   |  Midnight Blue  |     Ann Arbor (with buildings)      |
+|   <img src="examples/detroit_midnight_blue_20260414_011335.png" width="220">    |  Midnight Blue  |   Detroit (with buildings, 30km)    |
 
 ## Installation
 
-### With uv (Recommended)
+### With uv (recommended)
 
 Make sure [uv](https://docs.astral.sh/uv/) is installed.
 
@@ -45,133 +57,181 @@ pip install .
 ## Quick Start
 
 ```bash
-# Generate a poster
-opencartograph --city "Paris" --country "France"
+# Activate the venv first
+source .venv/bin/activate
 
-# Or run as a module
+# Generate a poster
 python -m opencartograph --city "Paris" --country "France"
 
-# With uv (if not installed as a CLI)
+# Or with uv
 uv run python -m opencartograph --city "Paris" --country "France"
 ```
 
 ## Usage
 
-### Required Options
+### Required
 
-| Option | Short | Description |
-|--------|-------|-------------|
-| `--city` | `-c` | City name |
-| `--country` | `-C` | Country name |
+| Option      | Short | Description  |
+| ----------- | ----- | ------------ |
+| `--city`    | `-c`  | City name    |
+| `--country` | `-C`  | Country name |
 
-### Options
+You can substitute `--latitude` / `--longitude` for the city/country if you want to center the map on exact coordinates.
 
-| Option | Short | Description | Default |
-|--------|-------|-------------|---------|
-| `--theme` | `-t` | Visual theme | `terracotta` |
-| `--distance` | `-d` | Map radius in meters | `18000` |
-| `--width` | `-W` | Poster width in inches | `12` |
-| `--height` | `-H` | Poster height in inches | `16` |
-| `--format` | `-f` | Output format (`png`, `svg`, `pdf`) | `png` |
-| `--no-text` | | Generate poster without any text overlay | |
-| `--latitude` | `-lat` | Override center latitude | |
-| `--longitude` | `-long` | Override center longitude | |
-| `--country-label` | | Override country text on poster | |
-| `--all-themes` | | Generate posters for all themes | |
-| `--list-themes` | | List available themes | |
+### Core options
 
-### Multilingual Support
+| Option         | Short | Description                                         | Default      |
+| -------------- | ----- | --------------------------------------------------- | ------------ |
+| `--theme`      | `-t`  | Visual theme name                                   | `terracotta` |
+| `--distance`   | `-d`  | Map radius in meters                                | `18000`      |
+| `--quality`    | `-q`  | Quality preset (`low`, `standard`, `high`, `ultra`) | `standard`   |
+| `--width`      | `-W`  | Image width in inches (overrides quality preset)    | `12`         |
+| `--height`     | `-H`  | Image height in inches (overrides quality preset)   | `16`         |
+| `--format`     | `-f`  | Output format (`png`, `svg`, `pdf`)                 | `png`        |
+| `--output-dir` | `-o`  | Output directory                                    | `output/`    |
 
-Display city and country names in any language with Google Fonts:
+### Quality presets
 
-| Option | Short | Description |
-|--------|-------|-------------|
-| `--display-city` | `-dc` | Custom display name for city |
-| `--display-country` | `-dC` | Custom display name for country |
-| `--font-family` | | Google Fonts family name |
+| Preset     | Dimensions | DPI | Use case                            |
+| ---------- | ---------- | --- | ----------------------------------- |
+| `low`      | 6 × 8"     | 150 | Quick previews and iteration        |
+| `standard` | 12 × 16"   | 300 | Default — high-quality print        |
+| `high`     | 16 × 20"   | 400 | Large prints                        |
+| `ultra`    | 18 × 20"   | 600 | Wall-sized prints, very large files |
 
-```bash
-# Japanese
-opencartograph -c "Tokyo" -C "Japan" -dc "東京" -dC "日本" --font-family "Noto Sans JP" -t japanese_ink
+### Optional layers
 
-# Korean
-opencartograph -c "Seoul" -C "South Korea" -dc "서울" -dC "대한민국" --font-family "Noto Sans KR" -t midnight_blue
+These extra layers are off by default. Each adds an extra OpenStreetMap fetch.
 
-# Arabic
-opencartograph -c "Dubai" -C "UAE" -dc "دبي" -dC "الإمارات" --font-family "Cairo" -t terracotta
-```
+| Option         | Description                                  |
+| -------------- | -------------------------------------------- |
+| `--airports`   | Airport grounds, runways, and taxiways       |
+| `--natl-parks` | National parks and protected areas           |
+| `--stadiums`   | Stadiums                                     |
+| `--buildings`  | Building footprints (heavy for dense cities) |
 
-Fonts are automatically downloaded from Google Fonts and cached locally in `fonts/cache/`.
+### Map controls
 
-### Examples
+| Option                          | Short   | Description                                         |
+| ------------------------------- | ------- | --------------------------------------------------- |
+| `--latitude`                    | `-lat`  | Override center latitude                            |
+| `--longitude`                   | `-long` | Override center longitude                           |
+| `--orientation-offset`          | `-O`    | Rotate the map clockwise by N degrees (-180 to 180) |
+| `--show-north` / `--hide-north` |         | Compass badge (auto-enabled when rotated)           |
+| `--line-scale`                  |         | Scale road line widths (default `1.0`)              |
+
+### Text and typography
+
+| Option               | Short | Description                                       |
+| -------------------- | ----- | ------------------------------------------------- |
+| `--no-text`          |       | Map only, no text overlay                         |
+| `--show-date`        |       | Display the current date below coordinates        |
+| `--show-attribution` |       | Show "© OpenStreetMap contributors" in the corner |
+| `--display-city`     | `-dc` | Override the displayed city name                  |
+| `--display-country`  | `-dC` | Override the displayed country name               |
+| `--country-label`    |       | Override the country line on the poster           |
+| `--font-family`      |       | Google Fonts family name                          |
+| `--font-path`        |       | Path to a local font file or directory            |
+
+Font priority: `--font-family` (Google Fonts) > `--font-path` (local) > bundled Roboto. Google Fonts are downloaded on first use and cached in `fonts/cache/`.
+
+### Theme management
+
+| Option             | Description                                             |
+| ------------------ | ------------------------------------------------------- |
+| `--list-themes`    | Print all available themes                              |
+| `--theme-swatches` | Generate a side-by-side color swatch PNG of every theme |
+| `--all-themes`     | Generate a poster for every theme at once               |
+
+## Examples
 
 ```bash
 # Map only, no text
-opencartograph -c "Frisco" -C "USA" -t noir -d 6000 --no-text
+python -m opencartograph -c "Frisco" -C "USA" -t noir -d 6000 --no-text
 
 # Iconic grid patterns
-opencartograph -c "New York" -C "USA" -t noir -d 12000
-opencartograph -c "Barcelona" -C "Spain" -t warm_beige -d 8000
+python -m opencartograph -c "New York" -C "USA" -t blueprint -d 12000
+python -m opencartograph -c "Barcelona" -C "Spain" -t warm_beige -d 8000
 
 # Waterfront cities
-opencartograph -c "Venice" -C "Italy" -t blueprint -d 4000
-opencartograph -c "Amsterdam" -C "Netherlands" -t ocean -d 6000
+python -m opencartograph -c "Venice" -C "Italy" -t blueprint -d 4000
+python -m opencartograph -c "Amsterdam" -C "Netherlands" -t ocean -d 6000
 
-# Custom coordinates
-opencartograph -c "Davisburg" -C "USA" -lat 42.755243 -long -83.556055 -t noir -d 3000 --no-text
+# Large wall print, all extra layers, custom title
+python -m opencartograph -c "Detroit" -C "USA" -t midnight_blue -d 30000 \
+    -q ultra --buildings --airports --natl-parks --stadiums
+
+# Rotated 45° with the compass badge
+python -m opencartograph -c "Granada" -C "Spain" -t copper_patina -O 45
+
+# Override coordinates and label
+python -m opencartograph -c "Huntsville" -C "United States" \
+    --display-city "UAH" --country-label "Huntsville" \
+    -lat 34.7245 -long -86.6398 -d 5000 -t blueprint --buildings
+
+# Local font for non-Latin scripts
+python -m opencartograph -c "Tokyo" -C "Japan" \
+    -dc "東京" -dC "日本" \
+    --font-path /usr/share/fonts/noto-cjk/
+
+# Google Fonts (auto-downloaded)
+python -m opencartograph -c "Seoul" -C "South Korea" \
+    -dc "서울" -dC "대한민국" \
+    --font-family "Noto Sans KR" -t midnight_blue
 
 # SVG output for editing
-opencartograph -c "London" -C "UK" -t noir -d 15000 -f svg
+python -m opencartograph -c "London" -C "UK" -t noir -d 15000 -f svg
 
-# Generate all themes at once
-opencartograph -c "Tokyo" -C "Japan" --all-themes
+# Generate every theme at once
+python -m opencartograph -c "Tokyo" -C "Japan" --all-themes
 ```
 
-### Distance Guide
+## Distance guide
 
-| Distance | Best for |
-|----------|----------|
-| 4000-6000m | Small/dense cities (Venice, Amsterdam center) |
-| 8000-12000m | Medium cities, downtown focus (Paris, Barcelona) |
-| 15000-20000m | Large metros, full city view (Tokyo, Mumbai) |
+| Distance     | Best for                                                          |
+| ------------ | ----------------------------------------------------------------- |
+| 4000-6000m   | Small/dense areas (Venice, Amsterdam center, single neighborhood) |
+| 8000-12000m  | Medium cities, downtown focus (Paris, Barcelona)                  |
+| 15000-20000m | Large metros, full city view (Tokyo, Mumbai)                      |
+| 25000-40000m | Entire metro areas with suburbs                                   |
 
-### Resolution Guide (300 DPI)
+## Themes (27 total)
 
-| Target | Resolution | Inches (`-W` / `-H`) |
-|--------|-----------|----------------------|
-| Instagram Post | 1080 x 1080 | 3.6 x 3.6 |
-| Mobile Wallpaper | 1080 x 1920 | 3.6 x 6.4 |
-| HD Wallpaper | 1920 x 1080 | 6.4 x 3.6 |
-| 4K Wallpaper | 3840 x 2160 | 12.8 x 7.2 |
-| A4 Print | 2480 x 3508 | 8.3 x 11.7 |
+Run `python -m opencartograph --list-themes` to see all themes, or `python -m opencartograph --theme-swatches` to generate a visual swatch.
 
-## Themes
+| Theme             | Style                                                                         |
+| ----------------- | ----------------------------------------------------------------------------- |
+| `amethyst`        | Deep aubergine purple with lavender and rose-gold accents                     |
+| `arctic`          | Icy whites and pale blues — winter aesthetic                                  |
+| `autumn`          | Burnt oranges, deep reds, golden yellows                                      |
+| `blueprint`       | Architectural blueprint aesthetic                                             |
+| `butter`          | Saturated butter yellow with caramel roads                                    |
+| `contrast_zones`  | High contrast, urban density gradient                                         |
+| `copper_patina`   | Oxidized copper teal-green with copper accents                                |
+| `crimson`         | Deep wine and burgundy with rose-gold accents                                 |
+| `emerald`         | Lush dark green with mint accents                                             |
+| `espresso`        | Rich dark chocolate browns with cream and caramel                             |
+| `forest`          | Deep greens and sage tones                                                    |
+| `gradient_roads`  | Smooth gradient from dark center to light edges                               |
+| `japanese_ink`    | Minimalist ink wash with subtle red accent                                    |
+| `midnight_blue`   | Navy background with gold/copper roads                                        |
+| `monochrome_blue` | Single blue color family                                                      |
+| `neon_cyberpunk`  | Dark with electric pink/cyan                                                  |
+| `night_drive`     | Black background with white "headlight" roads and red "brake light" motorways |
+| `noir`            | Pure black background, white roads — modern gallery aesthetic                 |
+| `ocean`           | Various blues and teals — coastal cities                                      |
+| `oxblood`         | Deep blood red with cream accents                                             |
+| `pastel_dream`    | Soft muted pastels                                                            |
+| `prussian`        | Old-world naval atlas — Prussian blue with cream parchment and gold           |
+| `sakura`          | Soft pink cherry blossom tones                                                |
+| `sunset`          | Warm oranges and pinks — golden hour aesthetic                                |
+| `terracotta`      | Mediterranean warmth (default)                                                |
+| `vaporwave`       | Retro synthwave — purple with hot pink and cyan neon                          |
+| `warm_beige`      | Earthy warm neutrals with sepia tones                                         |
 
-17 built-in themes in the `themes/` directory:
+### Custom themes
 
-| Theme | Style |
-|-------|-------|
-| `terracotta` | Mediterranean warmth (default) |
-| `noir` | Pure black background, white roads |
-| `midnight_blue` | Navy background with gold roads |
-| `blueprint` | Architectural blueprint aesthetic |
-| `neon_cyberpunk` | Dark with electric pink/cyan |
-| `warm_beige` | Vintage sepia tones |
-| `pastel_dream` | Soft muted pastels |
-| `japanese_ink` | Minimalist ink wash style |
-| `emerald` | Lush dark green aesthetic |
-| `forest` | Deep greens and sage |
-| `ocean` | Blues and teals for coastal cities |
-| `sunset` | Warm oranges and pinks |
-| `autumn` | Seasonal burnt oranges and reds |
-| `copper_patina` | Oxidized copper aesthetic |
-| `monochrome_blue` | Single blue color family |
-| `gradient_roads` | Smooth gradient shading |
-| `contrast_zones` | High contrast urban density |
-
-### Custom Themes
-
-Create a JSON file in `themes/`:
+Drop a JSON file in `themes/`. All keys are required:
 
 ```json
 {
@@ -180,8 +240,13 @@ Create a JSON file in `themes/`:
   "bg": "#FFFFFF",
   "text": "#000000",
   "gradient_color": "#FFFFFF",
-  "water": "#C0C0C0",
-  "parks": "#F0F0F0",
+  "water": "#C0D8E0",
+  "parks": "#E8F0E8",
+  "national_parks": "#D8E0D0",
+  "airports": "#F0F0F0",
+  "runways": "#888888",
+  "buildings": "#CCCCCC",
+  "stadiums": "#E0E8E0",
   "road_motorway": "#0A0A0A",
   "road_primary": "#1A1A1A",
   "road_secondary": "#2A2A2A",
@@ -193,43 +258,38 @@ Create a JSON file in `themes/`:
 
 ## Output
 
-Posters are saved to `output/` by default (override with `--output-dir`). Filename format:
+Posters are saved to `output/` by default. Filename format:
 
 ```
 {city}_{theme}_{YYYYMMDD_HHMMSS}.{format}
 ```
 
-## Project Structure
+## Project structure
 
 ```
 OpenCartograph/
 ├── opencartograph/
-│   ├── __init__.py
-│   ├── __main__.py          # python -m opencartograph
-│   ├── cli.py               # Argument parsing and entry point
-│   ├── constants.py          # All configurable constants
-│   ├── models.py             # Frozen dataclasses (Theme, PosterConfig, etc.)
-│   ├── fonts.py              # Font loading and Google Fonts integration
-│   ├── geocoding.py          # City name to coordinates via Nominatim
-│   ├── osm.py                # OpenStreetMap data fetching via OSMnx
-│   ├── output.py             # File saving and filename generation
-│   ├── road_styles.py        # Highway classification and styling
-│   ├── text.py               # Script detection and typography
-│   ├── theme.py              # Theme loading and management
+│   ├── cli.py                  # Argument parsing and entry point
+│   ├── constants.py            # Constants and z-orders
+│   ├── models.py               # Frozen dataclasses
+│   ├── fonts.py                # Font loading (Roboto, Google Fonts, local)
+│   ├── geocoding.py            # City → coordinates via Nominatim
+│   ├── osm.py                  # OpenStreetMap data fetching via OSMnx
+│   ├── output.py               # File saving and filename generation
+│   ├── road_styles.py          # Highway classification and styling
+│   ├── text.py                 # Script detection and typography
+│   ├── theme.py                # Theme loading and management
+│   ├── swatches.py             # Theme swatch generator
 │   └── rendering/
-│       ├── __init__.py
-│       ├── pipeline.py       # Rendering orchestrator
-│       ├── layers.py         # Individual render layers (water, parks, roads, etc.)
-│       └── viewport.py       # Figure setup and crop calculations
-├── tests/                    # Unit tests
-├── themes/                   # Theme JSON files
-├── fonts/                    # Bundled Roboto fonts + Google Fonts cache
-├── examples/                 # Example poster images
-└── output/                   # Generated output (gitignored)
+│       ├── pipeline.py         # Rendering orchestrator
+│       ├── layers.py           # Individual render layers
+│       ├── viewport.py         # Figure setup and crop calculations
+│       ├── ocean.py            # Coastline → ocean polygons
+│       ├── rotation.py         # Map rotation
+│       └── compass.py          # North compass badge
+├── tests/                      # Unit tests
+├── themes/                     # Theme JSON files
+├── fonts/                      # Bundled Roboto + Google Fonts cache
+├── examples/                   # Example poster images
+└── output/                     # Generated output (gitignored)
 ```
-
-## Contributing
-
-See [the roadmap](https://github.com/rramboer/OpenCartograph/issues/1) for planned features.
-
-Fork of [originalankur/maptoposter](https://github.com/originalankur/maptoposter). Licensed under MIT.

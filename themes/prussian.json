@@ -1,0 +1,20 @@
+{
+  "name": "Prussian",
+  "description": "Old-world naval atlas - deep Prussian blue with cream parchment and gold accents",
+  "bg": "#0F2340",
+  "text": "#E8D8A8",
+  "gradient_color": "#0F2340",
+  "water": "#081530",
+  "parks": "#1A3050",
+  "national_parks": "#223A60",
+  "airports": "#13294A",
+  "runways": "#C8A868",
+  "buildings": "#1E3655",
+  "stadiums": "#182E4A",
+  "road_motorway": "#E8C878",
+  "road_primary": "#D8B464",
+  "road_secondary": "#BE9E54",
+  "road_tertiary": "#A08646",
+  "road_residential": "#786438",
+  "road_default": "#A08646"
+}
