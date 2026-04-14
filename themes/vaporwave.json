@@ -1,0 +1,20 @@
+{
+  "name": "Vaporwave",
+  "description": "Retro synthwave - deep purple with hot pink and cyan neon accents",
+  "bg": "#1A0B2E",
+  "text": "#FF6EC7",
+  "gradient_color": "#1A0B2E",
+  "water": "#0D0522",
+  "parks": "#221038",
+  "national_parks": "#2C1848",
+  "airports": "#1F0D34",
+  "runways": "#00F5FF",
+  "buildings": "#3A1A50",
+  "stadiums": "#2A1340",
+  "road_motorway": "#FF2D95",
+  "road_primary": "#FF6EC7",
+  "road_secondary": "#00F5FF",
+  "road_tertiary": "#7B4BCC",
+  "road_residential": "#4A2A70",
+  "road_default": "#7B4BCC"
+}

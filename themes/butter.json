@@ -1,0 +1,20 @@
+{
+  "name": "Butter",
+  "description": "Soft butter yellow with warm cream and honey accents - cheerful vintage",
+  "bg": "#FFF4A3",
+  "text": "#5C3A10",
+  "gradient_color": "#FFF4A3",
+  "water": "#F5DC70",
+  "parks": "#FDE88E",
+  "national_parks": "#F5D868",
+  "airports": "#FFEC90",
+  "runways": "#B8801E",
+  "buildings": "#F5CC50",
+  "stadiums": "#F8DC78",
+  "road_motorway": "#6B4A1A",
+  "road_primary": "#8B6424",
+  "road_secondary": "#A88038",
+  "road_tertiary": "#C89850",
+  "road_residential": "#DCB470",
+  "road_default": "#C89850"
+}

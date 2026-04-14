@@ -1,0 +1,20 @@
+{
+  "name": "Crimson",
+  "description": "Deep wine and burgundy tones with rose-gold accents - sophisticated luxury",
+  "bg": "#2A0A0E",
+  "text": "#F5D4A0",
+  "gradient_color": "#2A0A0E",
+  "water": "#180508",
+  "parks": "#341015",
+  "national_parks": "#401820",
+  "airports": "#28080C",
+  "runways": "#C08060",
+  "buildings": "#3E1822",
+  "stadiums": "#381418",
+  "road_motorway": "#E8B870",
+  "road_primary": "#D49A5A",
+  "road_secondary": "#B88048",
+  "road_tertiary": "#9E6A3C",
+  "road_residential": "#7A5030",
+  "road_default": "#9E6A3C"
+}

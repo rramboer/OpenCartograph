@@ -1,0 +1,20 @@
+{
+  "name": "Espresso",
+  "description": "Rich dark chocolate browns with cream and caramel accents - cozy and warm",
+  "bg": "#1F1208",
+  "text": "#F0D9A8",
+  "gradient_color": "#1F1208",
+  "water": "#120A04",
+  "parks": "#261810",
+  "national_parks": "#302016",
+  "airports": "#1B0E06",
+  "runways": "#B88E5C",
+  "buildings": "#321E12",
+  "stadiums": "#2C1A10",
+  "road_motorway": "#E8C88A",
+  "road_primary": "#D4A870",
+  "road_secondary": "#B88A5A",
+  "road_tertiary": "#9A6E46",
+  "road_residential": "#785236",
+  "road_default": "#9A6E46"
+}

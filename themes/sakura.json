@@ -1,0 +1,20 @@
+{
+  "name": "Sakura",
+  "description": "Soft pink cherry blossom tones with rose and cherry red accents - spring aesthetic",
+  "bg": "#FDEEF2",
+  "text": "#8B2A3E",
+  "gradient_color": "#FDEEF2",
+  "water": "#F5D8E0",
+  "parks": "#F8E4EA",
+  "national_parks": "#F0D0D8",
+  "airports": "#F8E2E8",
+  "runways": "#E89AAC",
+  "buildings": "#F0C0CC",
+  "stadiums": "#F4D8DE",
+  "road_motorway": "#C8334F",
+  "road_primary": "#D4546A",
+  "road_secondary": "#DE7588",
+  "road_tertiary": "#E89AAC",
+  "road_residential": "#F2BCC8",
+  "road_default": "#E89AAC"
+}

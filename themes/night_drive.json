@@ -1,0 +1,20 @@
+{
+  "name": "Night Drive",
+  "description": "Black background with white headlight roads and red brake-light motorways",
+  "bg": "#0A0A0A",
+  "text": "#F0F0F0",
+  "gradient_color": "#0A0A0A",
+  "water": "#050510",
+  "parks": "#0F150F",
+  "national_parks": "#14201A",
+  "airports": "#121212",
+  "runways": "#E8E8E8",
+  "buildings": "#1A1A1A",
+  "stadiums": "#14181C",
+  "road_motorway": "#FF2D00",
+  "road_primary": "#FFD700",
+  "road_secondary": "#F5F5F5",
+  "road_tertiary": "#C8C8C8",
+  "road_residential": "#808080",
+  "road_default": "#C8C8C8"
+}

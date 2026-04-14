@@ -1,0 +1,20 @@
+{
+  "name": "Amethyst",
+  "description": "Deep aubergine midnight with muted lavender and dusty rose-gold accents",
+  "bg": "#1A0F2E",
+  "text": "#C8A8E0",
+  "gradient_color": "#1A0F2E",
+  "water": "#0E0620",
+  "parks": "#241438",
+  "national_parks": "#301C48",
+  "airports": "#1E1232",
+  "runways": "#8E6AAC",
+  "buildings": "#2C1A40",
+  "stadiums": "#281638",
+  "road_motorway": "#D4A080",
+  "road_primary": "#C8A8E0",
+  "road_secondary": "#A888C4",
+  "road_tertiary": "#8E6AAC",
+  "road_residential": "#6A4C88",
+  "road_default": "#8E6AAC"
+}
