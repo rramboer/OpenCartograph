@@ -31,11 +31,21 @@ def safe_filename(name: str) -> str:
     OpenCartograph slugifies city names with only lower/replace, so non-ASCII
     cities (São Paulo, Tōkyō, Zürich) produce filenames that crash urllib's
     ASCII-only URL encoder before any HTTP request goes out.
+
+    All-non-ASCII inputs (e.g. CJK cities) collapse to "render.png" — visible
+    in the rendered URL but the city identity is lost. Logs a stderr warning
+    so the operator can see the rewrite in CI logs.
     """
     decomposed = unicodedata.normalize("NFKD", name)
     ascii_only = decomposed.encode("ascii", "ignore").decode("ascii")
     cleaned = re.sub(r"[^A-Za-z0-9._-]+", "_", ascii_only).strip("_.")
-    return cleaned or "render.png"
+    if not cleaned:
+        print(f"WARNING: filename {name!r} stripped to empty; using 'render.png'",
+              file=sys.stderr)
+        return "render.png"
+    if cleaned != name:
+        print(f"WARNING: filename rewritten {name!r} → {cleaned!r}", file=sys.stderr)
+    return cleaned
 
 
 def ensure_renders_branch() -> None:

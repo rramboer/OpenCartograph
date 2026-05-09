@@ -51,7 +51,7 @@ def test_collect_paths_does_not_suppress_subdir_404():
     """A 404 on a subdirectory of a known-existing dir must raise, not be silently
     dropped (which would leave the dir half-pruned)."""
     def fake_api(method, path, body=None, **kwargs):
-        if "expect_404" in kwargs:
+        if kwargs.get("expect_404", False):
             return None
         raise RuntimeError(f"GET {path} → 404 simulated")
 
@@ -122,6 +122,9 @@ def test_commit_deletions_payload_shape():
     assert body["sha"] == "new_commit_sha"
     assert body["force"] is False, "force-push would let stale logic clobber concurrent commits"
 
+    assert len(calls) == len(responses), \
+        "extra API calls would IndexError mid-test; expand `responses` if a new call was added"
+
 
 def test_commit_deletions_aborts_above_safety_limit():
     """Refuse to delete more than MAX_PRUNE_FILES in one run, no API calls made."""
@@ -133,7 +136,7 @@ def test_commit_deletions_aborts_above_safety_limit():
 
 
 def test_commit_deletions_at_safety_limit_proceeds():
-    """Exactly MAX_PRUNE_FILES is allowed."""
+    """Exactly MAX_PRUNE_FILES is allowed and goes through the full API sequence."""
     paths = [f"issue-{i}/file.png" for i in range(prune_renders.MAX_PRUNE_FILES)]
     responses = [
         {"object": {"sha": "head_sha"}},
@@ -142,8 +145,9 @@ def test_commit_deletions_at_safety_limit_proceeds():
         {"sha": "new_commit_sha"},
         {"object": {"sha": "new_commit_sha"}},
     ]
-    with patch.object(prune_renders, "request_api", side_effect=responses):
+    with patch.object(prune_renders, "request_api", side_effect=responses) as m:
         prune_renders.commit_deletions(paths)
+    assert m.call_count == 5, "all 5 API calls must occur — no early return at the limit"
 
 
 def test_list_issue_dirs_ignores_non_issue_entries():
@@ -184,7 +188,8 @@ def test_main_dry_run_makes_no_mutations(monkeypatch, capsys):
 
     def fake_api(method, path, body=None, **kwargs):
         call_log.append((method, path))
-        return routes.get(path)
+        assert path in routes, f"unexpected API call to {path} — test fixture incomplete?"
+        return routes[path]
 
     with patch.object(prune_renders, "request_api", side_effect=fake_api):
         rc = prune_renders.main()

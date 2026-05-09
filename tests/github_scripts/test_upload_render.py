@@ -24,9 +24,23 @@ def test_safe_filename_keeps_ascii_unchanged():
     assert upload_render.safe_filename("paris_terracotta.png") == "paris_terracotta.png"
 
 
-def test_safe_filename_handles_all_non_ascii():
+def test_safe_filename_handles_all_non_ascii(capsys):
     """A pure non-ASCII input must not crash and must not produce an empty path."""
     assert upload_render.safe_filename("漢字漢字") == "render.png"
+    err = capsys.readouterr().err
+    assert "WARNING" in err and "render.png" in err
+
+
+def test_safe_filename_logs_when_rewriting(capsys):
+    """Operator must see in CI logs when a city name is being silently rewritten."""
+    upload_render.safe_filename("Zürich.png")
+    err = capsys.readouterr().err
+    assert "WARNING" in err and "Zürich.png" in err
+
+
+def test_safe_filename_silent_when_unchanged(capsys):
+    upload_render.safe_filename("paris.png")
+    assert capsys.readouterr().err == ""
 
 
 def test_safe_filename_collapses_unsafe_chars():
@@ -74,3 +88,6 @@ def test_ensure_renders_branch_uses_hardcoded_empty_tree_sha():
     assert ref_path == "/repos/owner/repo/git/refs"
     assert ref_body["ref"] == "refs/heads/renders"
     assert ref_body["sha"] == "init_commit_sha"
+
+    assert len(calls) == len(responses), \
+        "extra API calls would IndexError mid-test; expand `responses` if a new call was added"
