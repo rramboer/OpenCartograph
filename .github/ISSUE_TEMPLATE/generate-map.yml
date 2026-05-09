@@ -95,19 +95,84 @@ body:
     validations:
       required: true
 
+  - type: markdown
+    attributes:
+      value: |
+        ## Optional
+
+        Leave any of the fields below blank to use defaults.
+
+  - type: input
+    id: display_city
+    attributes:
+      label: Display name for city
+      description: Override what's printed on the poster (e.g. "東京" while geocoding still uses "Tokyo").
+      placeholder: leave blank to use the City field above
+
+  - type: input
+    id: display_country
+    attributes:
+      label: Display name for country
+      placeholder: leave blank to use the Country field above
+
+  - type: input
+    id: lat
+    attributes:
+      label: Override latitude
+      description: Skip city geocoding and use exact coordinates. Requires longitude too.
+      placeholder: e.g. 48.8566
+
+  - type: input
+    id: lon
+    attributes:
+      label: Override longitude
+      placeholder: e.g. 2.3522
+
   - type: input
     id: width
     attributes:
-      label: Custom width in inches (optional)
+      label: Custom width in inches
       description: Overrides the quality preset width. Max 20.
       placeholder: e.g. 14
 
   - type: input
     id: height
     attributes:
-      label: Custom height in inches (optional)
+      label: Custom height in inches
       description: Overrides the quality preset height. Max 20.
       placeholder: e.g. 11
+
+  - type: input
+    id: rotation
+    attributes:
+      label: Map rotation in degrees
+      description: Rotate the map clockwise. Range -180 to 180.
+      placeholder: e.g. 45
+
+  - type: dropdown
+    id: compass
+    attributes:
+      label: Compass badge
+      description: Whether to show the north-arrow compass.
+      options:
+        - "Auto (shown when rotated)"
+        - "Always show"
+        - "Always hide"
+      default: 0
+
+  - type: input
+    id: line_scale
+    attributes:
+      label: Road width scale
+      description: Scale factor for road thickness. Default 1.0; >1 thicker, <1 thinner.
+      placeholder: e.g. 1.5
+
+  - type: input
+    id: font_family
+    attributes:
+      label: Google Fonts family
+      description: Use a specific Google Font (e.g. "Noto Sans JP" for Japanese, "Playfair Display"). Auto-downloaded.
+      placeholder: e.g. Noto Sans JP
 
   - type: checkboxes
     id: layers
@@ -128,16 +193,3 @@ body:
         - label: Show date
         - label: Show OpenStreetMap attribution
         - label: No text overlay (map only)
-
-  - type: input
-    id: lat
-    attributes:
-      label: Override latitude (optional)
-      description: Skip city geocoding and use exact coordinates. Requires longitude too.
-      placeholder: e.g. 48.8566
-
-  - type: input
-    id: lon
-    attributes:
-      label: Override longitude (optional)
-      placeholder: e.g. 2.3522
