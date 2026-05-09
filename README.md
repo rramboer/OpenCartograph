@@ -32,6 +32,10 @@ An open-source cartographic rendering tool. Generate high-quality map posters fo
 |  <img src="examples/ann_arbor_midnight_blue_20260410_011524.png" width="220">   |  Midnight Blue  |     Ann Arbor (with buildings)      |
 |   <img src="examples/detroit_midnight_blue_20260414_011335.png" width="220">    |  Midnight Blue  |   Detroit (with buildings, 30km)    |
 
+## Generate without installing
+
+Don't want to set up Python? **[Open the issue form →](https://github.com/rramboer/OpenCartograph/issues/new?template=generate-map.yml)** Fill out the form and your map will be rendered automatically and posted as a comment within a few minutes (requires a free GitHub account; you'll get an email when it's ready).
+
 ## Installation
 
 ### With uv (recommended)

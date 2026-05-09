@@ -1,0 +1,126 @@
+name: Create a Map
+description: Generate a custom OpenCartograph map poster — no install required
+title: "[Map] "
+labels: ["map-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fill in the form below — your map will be generated automatically and posted as a comment on this issue (usually 2–4 minutes).
+
+        **Picking a theme?** See the [theme swatches](https://github.com/rramboer/OpenCartograph/blob/main/examples/theme_swatches.png) for a visual reference.
+
+  - type: input
+    id: city
+    attributes:
+      label: City
+      placeholder: e.g. Paris
+    validations:
+      required: true
+
+  - type: input
+    id: country
+    attributes:
+      label: Country
+      placeholder: e.g. France
+    validations:
+      required: true
+
+  - type: dropdown
+    id: theme
+    attributes:
+      label: Theme
+      options:
+        - amethyst
+        - arctic
+        - autumn
+        - blueprint
+        - butter
+        - contrast_zones
+        - copper_patina
+        - crimson
+        - emerald
+        - espresso
+        - forest
+        - gradient_roads
+        - japanese_ink
+        - midnight_blue
+        - monochrome_blue
+        - neon_cyberpunk
+        - night_drive
+        - noir
+        - ocean
+        - oxblood
+        - pastel_dream
+        - prussian
+        - sakura
+        - sunset
+        - terracotta
+        - tropical
+        - vaporwave
+        - warm_beige
+      default: 24
+    validations:
+      required: true
+
+  - type: dropdown
+    id: zoom
+    attributes:
+      label: Zoom level
+      description: Roughly how much area around the center to include.
+      options:
+        - "Neighborhood (~4 km)"
+        - "Downtown (~8 km)"
+        - "City (~18 km)"
+        - "Metro (~30 km)"
+        - "Region (~60 km)"
+        - "Wide (~90 km)"
+      default: 2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: quality
+    attributes:
+      label: Quality
+      description: Higher quality means a larger file and a longer render time.
+      options:
+        - "Low (fast preview)"
+        - "Standard"
+        - "High"
+      default: 1
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: layers
+    attributes:
+      label: Extra layers
+      description: Each adds an extra OpenStreetMap data fetch.
+      options:
+        - label: Airports
+        - label: National parks
+        - label: Stadiums
+        - label: Buildings (heavy for dense cities)
+
+  - type: checkboxes
+    id: text
+    attributes:
+      label: Text overlay
+      options:
+        - label: Show date
+        - label: Show OpenStreetMap attribution
+        - label: No text overlay (map only)
+
+  - type: input
+    id: lat
+    attributes:
+      label: Override latitude (optional)
+      description: Skip city geocoding and use exact coordinates. Requires longitude too.
+      placeholder: e.g. 48.8566
+
+  - type: input
+    id: lon
+    attributes:
+      label: Override longitude (optional)
+      placeholder: e.g. 2.3522

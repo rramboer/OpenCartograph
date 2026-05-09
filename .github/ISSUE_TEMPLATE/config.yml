@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Theme reference
+    url: https://github.com/rramboer/OpenCartograph/blob/main/examples/theme_swatches.png
+    about: Visual reference for all 28 themes.
