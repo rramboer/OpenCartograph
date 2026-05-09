@@ -14,6 +14,11 @@ from _gh_api import repo_path, request_api
 
 BRANCH = "renders"
 
+# Safety guard: prune is the only destructive workflow. Refuse to delete more
+# than this in a single run so a future bug in path-collection or staleness
+# logic can't wipe the entire branch in one commit.
+MAX_PRUNE_FILES = 200
+
 
 def is_truthy(s: str | None) -> bool:
     return (s or "").strip().lower() in {"1", "true", "yes", "on"}
@@ -37,11 +42,23 @@ def list_issue_dirs() -> list[tuple[int, str]]:
 
 
 def issue_closed_at(num: int) -> datetime | None:
-    """Return the issue's closed_at as a UTC datetime, or None if the issue is open
-    or doesn't exist (treat missing issues as prunable to clean up after deletes)."""
+    """Return the issue's closed_at as a UTC datetime, or None to keep its renders.
+
+    Returns None for: open issues, missing closed_at, AND 404 responses.
+
+    Treating 404 as "keep" — not "prune" — because GitHub returns 404 for many
+    auth-shape problems (token rotated, SSO expired, scope changed) as well as
+    truly-deleted issues. A single auth blip during a scheduled prune must not
+    silently delete every render on the branch.
+    """
     issue = request_api("GET", repo_path(f"/issues/{num}"), expect_404=True)
     if issue is None:
-        return datetime.now(timezone.utc) - timedelta(days=10_000)
+        print(
+            f"WARNING: issue #{num} returned 404; skipping. "
+            f"If the issue is truly deleted, prune renders/issue-{num}/ manually.",
+            file=sys.stderr,
+        )
+        return None
     if issue.get("state") != "closed":
         return None
     closed_at = issue.get("closed_at")
@@ -51,14 +68,17 @@ def issue_closed_at(num: int) -> datetime | None:
 
 
 def collect_paths_under(dir_path: str) -> list[str]:
-    """Recursively list all blob paths under dir_path on the renders branch."""
+    """Recursively list all blob paths under dir_path on the renders branch.
+
+    Subdirectories of a known-existing dir should not 404; if one does, raise so
+    the prune run aborts rather than silently skipping a partial subtree (which
+    would leave the dir half-pruned and the caller none the wiser).
+    """
     paths: list[str] = []
     stack = [dir_path]
     while stack:
         current = stack.pop()
-        entries = request_api(
-            "GET", repo_path(f"/contents/{current}?ref={BRANCH}"), expect_404=True
-        )
+        entries = request_api("GET", repo_path(f"/contents/{current}?ref={BRANCH}"))
         if not entries:
             continue
         for entry in entries:
@@ -71,12 +91,22 @@ def collect_paths_under(dir_path: str) -> list[str]:
 
 def commit_deletions(paths_to_delete: list[str]) -> None:
     """Build a new tree omitting the given paths and push a single commit."""
+    if len(paths_to_delete) > MAX_PRUNE_FILES:
+        raise RuntimeError(
+            f"Refusing to delete {len(paths_to_delete)} files in one prune run "
+            f"(safety limit: {MAX_PRUNE_FILES}). Investigate before raising the limit."
+        )
+
     branch_ref = request_api("GET", repo_path(f"/git/refs/heads/{BRANCH}"))
     head_sha = branch_ref["object"]["sha"]
     head_commit = request_api("GET", repo_path(f"/git/commits/{head_sha}"))
     base_tree_sha = head_commit["tree"]["sha"]
 
-    tree_entries = [{"path": p, "mode": "100644", "type": "blob", "sha": None} for p in paths_to_delete]
+    # null sha on a base_tree entry deletes the path (GitHub Git Data API)
+    tree_entries = [
+        {"path": p, "mode": "100644", "type": "blob", "sha": None}
+        for p in paths_to_delete
+    ]
 
     new_tree = request_api(
         "POST",
@@ -122,7 +152,7 @@ def main() -> int:
     for num, path in sorted(issue_dirs):
         closed_at = issue_closed_at(num)
         if closed_at is None:
-            print(f"  keep    issue-{num}: open")
+            print(f"  keep    issue-{num}: open or unknown")
             continue
         if closed_at >= cutoff:
             age = datetime.now(timezone.utc) - closed_at
