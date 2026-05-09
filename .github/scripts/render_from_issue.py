@@ -29,6 +29,12 @@ QUALITY_LABEL_TO_FLAG = {
     "Ultra (very large file, slow render)": "ultra",
 }
 
+COMPASS_LABEL_TO_FLAG = {
+    "Auto (shown when rotated)": None,
+    "Always show": "--show-north",
+    "Always hide": "--hide-north",
+}
+
 LAYER_FLAGS = {
     "Airports": "--airports",
     "National parks": "--natl-parks",
@@ -86,10 +92,10 @@ def build_command(sections: dict[str, str]) -> list[str]:
         raise ValueError("Both City and Country are required")
 
     theme = get_value(sections, "Theme") or "terracotta"
-    zoom_label = get_value(sections, "Zoom level") or "City (~18 km)"
+    zoom_label = get_value(sections, "Zoom level") or "City (10 mi)"
     quality_label = get_value(sections, "Quality") or "Standard"
 
-    distance = ZOOM_TO_DISTANCE.get(zoom_label, 18000)
+    distance = ZOOM_TO_DISTANCE.get(zoom_label, 16000)
     quality = QUALITY_LABEL_TO_FLAG.get(quality_label, "standard")
 
     cmd = [
@@ -101,17 +107,41 @@ def build_command(sections: dict[str, str]) -> list[str]:
         "-q", quality,
     ]
 
-    lat = get_value(sections, "Override latitude (optional)")
-    lon = get_value(sections, "Override longitude (optional)")
+    display_city = get_value(sections, "Display name for city")
+    if display_city:
+        cmd += ["-dc", display_city]
+    display_country = get_value(sections, "Display name for country")
+    if display_country:
+        cmd += ["-dC", display_country]
+
+    lat = get_value(sections, "Override latitude")
+    lon = get_value(sections, "Override longitude")
     if lat and lon:
         cmd += ["-lat", lat, "-long", lon]
 
-    width = get_value(sections, "Custom width in inches (optional)")
+    width = get_value(sections, "Custom width in inches")
     if width:
         cmd += ["-W", width]
-    height = get_value(sections, "Custom height in inches (optional)")
+    height = get_value(sections, "Custom height in inches")
     if height:
         cmd += ["-H", height]
+
+    rotation = get_value(sections, "Map rotation in degrees")
+    if rotation:
+        cmd += ["-O", rotation]
+
+    compass_label = get_value(sections, "Compass badge") or "Auto (shown when rotated)"
+    compass_flag = COMPASS_LABEL_TO_FLAG.get(compass_label)
+    if compass_flag:
+        cmd.append(compass_flag)
+
+    line_scale = get_value(sections, "Road width scale")
+    if line_scale:
+        cmd += ["--line-scale", line_scale]
+
+    font_family = get_value(sections, "Google Fonts family")
+    if font_family:
+        cmd += ["--font-family", font_family]
 
     layers_checked = checked_options(sections, "Extra layers")
     for label, flag in LAYER_FLAGS.items():
