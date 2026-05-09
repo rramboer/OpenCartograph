@@ -1,0 +1,20 @@
+{
+  "name": "Tropical",
+  "description": "Bright tropical pastels — Caribbean blue water with lush green land and coral road accents",
+  "bg": "#D8EFC4",
+  "text": "#2A5F3F",
+  "gradient_color": "#D8EFC4",
+  "water": "#4FC8E0",
+  "parks": "#A8DCA0",
+  "national_parks": "#7BC97A",
+  "airports": "#F8EDD0",
+  "runways": "#FF9A7A",
+  "buildings": "#FFD4B0",
+  "stadiums": "#FFC4C8",
+  "road_motorway": "#FF6B82",
+  "road_primary": "#FF8C5A",
+  "road_secondary": "#FFAB6E",
+  "road_tertiary": "#FFD46A",
+  "road_residential": "#7ABF8A",
+  "road_default": "#FF9A7A"
+}

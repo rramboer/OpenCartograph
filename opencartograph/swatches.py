@@ -107,7 +107,7 @@ def generate_swatches(output_dir: str | None = None) -> None:
                 color="#000000" if _is_light(color) else "#FFFFFF",
             )
 
-    out_dir = output_dir or str(constants.OUTPUT_DIR)
+    out_dir = output_dir or str(constants.PROJECT_ROOT / "examples")
     out_path = Path(out_dir) / "theme_swatches.png"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(out_path, dpi=200, bbox_inches="tight", pad_inches=0.2)

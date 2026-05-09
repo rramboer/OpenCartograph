@@ -1,6 +1,6 @@
 # OpenCartograph
 
-An open-source cartographic rendering tool. Generate high-quality map posters for any location worldwide using OpenStreetMap data. 27 themes, multiple layer types, rotation, custom fonts, and resolutions up to 18×20" at 600 DPI.
+An open-source cartographic rendering tool. Generate high-quality map posters for any location worldwide using OpenStreetMap data. 28 themes, multiple layer types, rotation, custom fonts, and resolutions up to 18×20" at 600 DPI.
 
 ## Examples
 
@@ -195,9 +195,11 @@ python -m opencartograph -c "Tokyo" -C "Japan" --all-themes
 | 15000-20000m | Large metros, full city view (Tokyo, Mumbai)                      |
 | 25000-40000m | Entire metro areas with suburbs                                   |
 
-## Themes (27 total)
+## Themes (28 total)
 
-Run `python -m opencartograph --list-themes` to see all themes, or `python -m opencartograph --theme-swatches` to generate a visual swatch.
+Run `python -m opencartograph --list-themes` to see all themes, or `python -m opencartograph --theme-swatches` to regenerate the swatch below.
+
+![Theme swatches](examples/theme_swatches.png)
 
 | Theme             | Style                                                                         |
 | ----------------- | ----------------------------------------------------------------------------- |
@@ -226,6 +228,7 @@ Run `python -m opencartograph --list-themes` to see all themes, or `python -m op
 | `sakura`          | Soft pink cherry blossom tones                                                |
 | `sunset`          | Warm oranges and pinks — golden hour aesthetic                                |
 | `terracotta`      | Mediterranean warmth (default)                                                |
+| `tropical`        | Bright Caribbean blue water with lush green land and coral road accents       |
 | `vaporwave`       | Retro synthwave — purple with hot pink and cyan neon                          |
 | `warm_beige`      | Earthy warm neutrals with sepia tones                                         |
 
