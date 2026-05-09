@@ -1,0 +1,39 @@
+name: Prune Old Renders
+
+on:
+  schedule:
+    - cron: "0 3 * * 0"   # Sundays at 03:00 UTC
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (only print what would be pruned)"
+        type: boolean
+        default: true
+      max_age_days:
+        description: "Prune renders for issues closed more than N days ago"
+        type: string
+        default: "30"
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      issues: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Prune
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          DRY_RUN: ${{ github.event_name == 'schedule' && 'false' || inputs.dry_run }}
+          MAX_AGE_DAYS: ${{ inputs.max_age_days || '30' }}
+        run: python .github/scripts/prune_renders.py
