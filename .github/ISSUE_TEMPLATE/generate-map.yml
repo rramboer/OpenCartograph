@@ -69,12 +69,14 @@ body:
       label: Zoom level
       description: Roughly how much area around the center to include.
       options:
-        - "Neighborhood (~4 km)"
-        - "Downtown (~8 km)"
-        - "City (~18 km)"
-        - "Metro (~30 km)"
-        - "Region (~60 km)"
-        - "Wide (~90 km)"
+        - "Neighborhood (3 mi)"
+        - "Downtown (5 mi)"
+        - "City (10 mi)"
+        - "Metro (20 mi)"
+        - "Wide metro (35 mi)"
+        - "Region (50 mi)"
+        - "State (100 mi)"
+        - "Multi-state (150 mi)"
       default: 2
     validations:
       required: true
@@ -88,9 +90,24 @@ body:
         - "Low (fast preview)"
         - "Standard"
         - "High"
+        - "Ultra (very large file, slow render)"
       default: 1
     validations:
       required: true
+
+  - type: input
+    id: width
+    attributes:
+      label: Custom width in inches (optional)
+      description: Overrides the quality preset width. Max 20.
+      placeholder: e.g. 14
+
+  - type: input
+    id: height
+    attributes:
+      label: Custom height in inches (optional)
+      description: Overrides the quality preset height. Max 20.
+      placeholder: e.g. 11
 
   - type: checkboxes
     id: layers

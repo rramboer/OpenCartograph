@@ -22,7 +22,7 @@ tropical
 
 ### Zoom level
 
-City (~18 km)
+City (10 mi)
 
 ### Quality
 
@@ -48,6 +48,14 @@ _No response_
 ### Override longitude (optional)
 
 _No response_
+
+### Custom width in inches (optional)
+
+_No response_
+
+### Custom height in inches (optional)
+
+_No response_
 """
 
 SAMPLE_COORDS_OVERRIDE = """### City
@@ -64,7 +72,7 @@ ocean
 
 ### Zoom level
 
-Wide (~90 km)
+Region (50 mi)
 
 ### Quality
 
@@ -90,6 +98,14 @@ Low (fast preview)
 ### Override longitude (optional)
 
 -81.55
+
+### Custom width in inches (optional)
+
+_No response_
+
+### Custom height in inches (optional)
+
+_No response_
 """
 
 
@@ -105,7 +121,7 @@ def test_full_form_builds_expected_command():
     assert _arg_after(cmd, "-c") == "Paris"
     assert _arg_after(cmd, "-C") == "France"
     assert _arg_after(cmd, "-t") == "tropical"
-    assert _arg_after(cmd, "-d") == "18000"
+    assert _arg_after(cmd, "-d") == "16000"
     assert _arg_after(cmd, "-q") == "standard"
     assert "--airports" in cmd
     assert "--buildings" in cmd
@@ -121,7 +137,7 @@ def test_coords_override():
     cmd = r.build_command(sections)
 
     assert _arg_after(cmd, "-t") == "ocean"
-    assert _arg_after(cmd, "-d") == "90000"
+    assert _arg_after(cmd, "-d") == "80000"
     assert _arg_after(cmd, "-q") == "low"
     assert _arg_after(cmd, "-lat") == "24.65"
     assert _arg_after(cmd, "-long") == "-81.55"
@@ -144,3 +160,42 @@ def test_checked_options_handles_no_selections():
     body = "### Extra layers\n\n- [ ] Airports\n- [ ] National parks\n"
     sections = r.parse_sections(body)
     assert r.checked_options(sections, "Extra layers") == []
+
+
+def test_ultra_quality_maps_to_ultra_flag():
+    body = SAMPLE_FULL.replace("Standard", "Ultra (very large file, slow render)")
+    sections = r.parse_sections(body)
+    cmd = r.build_command(sections)
+    assert _arg_after(cmd, "-q") == "ultra"
+
+
+def test_largest_zoom_maps_to_240km():
+    body = SAMPLE_FULL.replace("City (10 mi)", "Multi-state (150 mi)")
+    sections = r.parse_sections(body)
+    cmd = r.build_command(sections)
+    assert _arg_after(cmd, "-d") == "240000"
+
+
+def test_custom_dimensions_override():
+    body = (
+        SAMPLE_FULL
+        .replace(
+            "### Custom width in inches (optional)\n\n_No response_",
+            "### Custom width in inches (optional)\n\n14",
+        )
+        .replace(
+            "### Custom height in inches (optional)\n\n_No response_",
+            "### Custom height in inches (optional)\n\n11",
+        )
+    )
+    sections = r.parse_sections(body)
+    cmd = r.build_command(sections)
+    assert _arg_after(cmd, "-W") == "14"
+    assert _arg_after(cmd, "-H") == "11"
+
+
+def test_dimensions_omitted_when_blank():
+    sections = r.parse_sections(SAMPLE_FULL)
+    cmd = r.build_command(sections)
+    assert "-W" not in cmd
+    assert "-H" not in cmd

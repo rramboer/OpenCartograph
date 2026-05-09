@@ -12,18 +12,21 @@ import sys
 from pathlib import Path
 
 ZOOM_TO_DISTANCE = {
-    "Neighborhood (~4 km)": 4000,
-    "Downtown (~8 km)": 8000,
-    "City (~18 km)": 18000,
-    "Metro (~30 km)": 30000,
-    "Region (~60 km)": 60000,
-    "Wide (~90 km)": 90000,
+    "Neighborhood (3 mi)": 5000,
+    "Downtown (5 mi)": 8000,
+    "City (10 mi)": 16000,
+    "Metro (20 mi)": 32000,
+    "Wide metro (35 mi)": 56000,
+    "Region (50 mi)": 80000,
+    "State (100 mi)": 160000,
+    "Multi-state (150 mi)": 240000,
 }
 
 QUALITY_LABEL_TO_FLAG = {
     "Low (fast preview)": "low",
     "Standard": "standard",
     "High": "high",
+    "Ultra (very large file, slow render)": "ultra",
 }
 
 LAYER_FLAGS = {
@@ -102,6 +105,13 @@ def build_command(sections: dict[str, str]) -> list[str]:
     lon = get_value(sections, "Override longitude (optional)")
     if lat and lon:
         cmd += ["-lat", lat, "-long", lon]
+
+    width = get_value(sections, "Custom width in inches (optional)")
+    if width:
+        cmd += ["-W", width]
+    height = get_value(sections, "Custom height in inches (optional)")
+    if height:
+        cmd += ["-H", height]
 
     layers_checked = checked_options(sections, "Extra layers")
     for label, flag in LAYER_FLAGS.items():
