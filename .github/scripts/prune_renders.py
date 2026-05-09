@@ -90,7 +90,11 @@ def collect_paths_under(dir_path: str) -> list[str]:
 
 
 def commit_deletions(paths_to_delete: list[str]) -> None:
-    """Build a new tree omitting the given paths and push a single commit."""
+    """Build a new tree omitting the given paths and push a single commit.
+
+    Raises RuntimeError if asked to delete more than MAX_PRUNE_FILES — guards
+    against runaway prune logic accidentally wiping the branch in one commit.
+    """
     if len(paths_to_delete) > MAX_PRUNE_FILES:
         raise RuntimeError(
             f"Refusing to delete {len(paths_to_delete)} files in one prune run "
@@ -108,6 +112,9 @@ def commit_deletions(paths_to_delete: list[str]) -> None:
         for p in paths_to_delete
     ]
 
+    # base_tree is load-bearing: omit it and the new tree contains ONLY the
+    # delete-stubs, which the API resolves to an empty tree → next commit
+    # wipes the branch. Test test_commit_deletions_payload_shape locks this.
     new_tree = request_api(
         "POST",
         repo_path("/git/trees"),
