@@ -26,6 +26,20 @@ body:
     validations:
       required: true
 
+  - type: input
+    id: display_city
+    attributes:
+      label: Display name for city (optional)
+      description: Override what's printed on the poster (use to render non-Latin scripts, e.g. "東京").
+      placeholder: leave blank to use the City field above
+
+  - type: input
+    id: display_country
+    attributes:
+      label: Display name for country (optional)
+      description: Override what's printed under the city.
+      placeholder: leave blank to use the Country field above
+
   - type: dropdown
     id: theme
     attributes:

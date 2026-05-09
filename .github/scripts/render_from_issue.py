@@ -113,6 +113,13 @@ def build_command(sections: dict[str, str]) -> list[str]:
     if height:
         cmd += ["-H", height]
 
+    display_city = get_value(sections, "Display name for city (optional)")
+    if display_city:
+        cmd += ["-dc", display_city]
+    display_country = get_value(sections, "Display name for country (optional)")
+    if display_country:
+        cmd += ["-dC", display_country]
+
     layers_checked = checked_options(sections, "Extra layers")
     for label, flag in LAYER_FLAGS.items():
         if _has_match(label, layers_checked):

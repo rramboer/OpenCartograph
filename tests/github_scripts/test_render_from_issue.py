@@ -16,6 +16,14 @@ Paris
 
 France
 
+### Display name for city (optional)
+
+_No response_
+
+### Display name for country (optional)
+
+_No response_
+
 ### Theme
 
 tropical
@@ -65,6 +73,14 @@ Lower Keys
 ### Country
 
 USA
+
+### Display name for city (optional)
+
+_No response_
+
+### Display name for country (optional)
+
+_No response_
 
 ### Theme
 
@@ -199,3 +215,31 @@ def test_dimensions_omitted_when_blank():
     cmd = r.build_command(sections)
     assert "-W" not in cmd
     assert "-H" not in cmd
+
+
+def test_display_name_overrides():
+    body = (
+        SAMPLE_FULL
+        .replace(
+            "### Display name for city (optional)\n\n_No response_",
+            "### Display name for city (optional)\n\n東京",
+        )
+        .replace(
+            "### Display name for country (optional)\n\n_No response_",
+            "### Display name for country (optional)\n\n日本",
+        )
+    )
+    sections = r.parse_sections(body)
+    cmd = r.build_command(sections)
+    assert _arg_after(cmd, "-dc") == "東京"
+    assert _arg_after(cmd, "-dC") == "日本"
+    # The geocoding city/country are still passed via -c / -C
+    assert _arg_after(cmd, "-c") == "Paris"
+    assert _arg_after(cmd, "-C") == "France"
+
+
+def test_display_names_omitted_when_blank():
+    sections = r.parse_sections(SAMPLE_FULL)
+    cmd = r.build_command(sections)
+    assert "-dc" not in cmd
+    assert "-dC" not in cmd
