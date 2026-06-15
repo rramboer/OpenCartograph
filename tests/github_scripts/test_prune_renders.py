@@ -150,6 +150,66 @@ def test_commit_deletions_at_safety_limit_proceeds():
     assert m.call_count == 5, "all 5 API calls must occur — no early return at the limit"
 
 
+def test_commit_deletions_falls_back_to_contents_api_on_git_data_404():
+    calls = []
+
+    def fake_api(method, path, body=None, **kwargs):
+        calls.append((method, path, body, kwargs))
+        if (method, path) == ("GET", "/repos/owner/repo/git/refs/heads/renders"):
+            return {"object": {"sha": "head_sha"}}
+        if (method, path) == ("GET", "/repos/owner/repo/git/commits/head_sha"):
+            return {"tree": {"sha": "base_tree_sha"}}
+        if (method, path) == ("POST", "/repos/owner/repo/git/trees"):
+            raise RuntimeError(
+                'POST /repos/owner/repo/git/trees → 404: {"message":"Not Found"}'
+            )
+        if (method, path) == ("GET", "/repos/owner/repo/contents/issue-1/a.png?ref=renders"):
+            return {"sha": "sha-a"}
+        if (method, path) == ("GET", "/repos/owner/repo/contents/issue-1/b.png?ref=renders"):
+            return {"sha": "sha-b"}
+        if (method, path) == ("DELETE", "/repos/owner/repo/contents/issue-1/a.png"):
+            return {}
+        if (method, path) == ("DELETE", "/repos/owner/repo/contents/issue-1/b.png"):
+            return {}
+        raise AssertionError(f"unexpected API call: {(method, path, body, kwargs)}")
+
+    with patch.object(prune_renders, "request_api", side_effect=fake_api):
+        prune_renders.commit_deletions(["issue-1/a.png", "issue-1/b.png"])
+
+    assert calls[3] == (
+        "GET",
+        "/repos/owner/repo/contents/issue-1/a.png?ref=renders",
+        None,
+        {"expect_404": True},
+    )
+    assert calls[4] == (
+        "DELETE",
+        "/repos/owner/repo/contents/issue-1/a.png",
+        {
+            "message": "Prune stale render file issue-1/a.png",
+            "branch": "renders",
+            "sha": "sha-a",
+        },
+        {},
+    )
+    assert calls[5] == (
+        "GET",
+        "/repos/owner/repo/contents/issue-1/b.png?ref=renders",
+        None,
+        {"expect_404": True},
+    )
+    assert calls[6] == (
+        "DELETE",
+        "/repos/owner/repo/contents/issue-1/b.png",
+        {
+            "message": "Prune stale render file issue-1/b.png",
+            "branch": "renders",
+            "sha": "sha-b",
+        },
+        {},
+    )
+
+
 def test_list_issue_dirs_ignores_non_issue_entries():
     contents = [
         {"type": "dir", "name": "issue-1", "path": "issue-1"},
