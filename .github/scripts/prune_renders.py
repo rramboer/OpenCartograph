@@ -89,6 +89,33 @@ def collect_paths_under(dir_path: str) -> list[str]:
     return paths
 
 
+def _is_git_data_404(exc: RuntimeError) -> bool:
+    message = str(exc)
+    return (
+        " → 404:" in message
+        and repo_path("/git/") in message
+        and (message.startswith("POST ") or message.startswith("PATCH "))
+    )
+
+
+def delete_via_contents_api(paths_to_delete: list[str]) -> None:
+    for path in paths_to_delete:
+        current = request_api(
+            "GET", repo_path(f"/contents/{path}?ref={BRANCH}"), expect_404=True
+        )
+        if current is None:
+            continue
+        request_api(
+            "DELETE",
+            repo_path(f"/contents/{path}"),
+            {
+                "message": f"Prune stale render file {path}",
+                "branch": BRANCH,
+                "sha": current["sha"],
+            },
+        )
+
+
 def commit_deletions(paths_to_delete: list[str]) -> None:
     """Build a new tree omitting the given paths and push a single commit.
 
@@ -115,27 +142,32 @@ def commit_deletions(paths_to_delete: list[str]) -> None:
     # base_tree is load-bearing: omit it and the new tree contains ONLY the
     # delete-stubs, which the API resolves to an empty tree → next commit
     # wipes the branch. Test test_commit_deletions_payload_shape locks this.
-    new_tree = request_api(
-        "POST",
-        repo_path("/git/trees"),
-        {"base_tree": base_tree_sha, "tree": tree_entries},
-    )
+    try:
+        new_tree = request_api(
+            "POST",
+            repo_path("/git/trees"),
+            {"base_tree": base_tree_sha, "tree": tree_entries},
+        )
 
-    new_commit = request_api(
-        "POST",
-        repo_path("/git/commits"),
-        {
-            "message": f"Prune {len(paths_to_delete)} stale render file(s)",
-            "tree": new_tree["sha"],
-            "parents": [head_sha],
-        },
-    )
+        new_commit = request_api(
+            "POST",
+            repo_path("/git/commits"),
+            {
+                "message": f"Prune {len(paths_to_delete)} stale render file(s)",
+                "tree": new_tree["sha"],
+                "parents": [head_sha],
+            },
+        )
 
-    request_api(
-        "PATCH",
-        repo_path(f"/git/refs/heads/{BRANCH}"),
-        {"sha": new_commit["sha"], "force": False},
-    )
+        request_api(
+            "PATCH",
+            repo_path(f"/git/refs/heads/{BRANCH}"),
+            {"sha": new_commit["sha"], "force": False},
+        )
+    except RuntimeError as exc:
+        if not _is_git_data_404(exc):
+            raise
+        delete_via_contents_api(paths_to_delete)
 
 
 def main() -> int:
