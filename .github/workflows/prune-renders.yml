@@ -25,11 +25,21 @@ jobs:
 
     steps:
       # GitHub disables scheduled workflows after 60 days without repository
-      # activity; re-enabling the workflow on every run resets that clock.
+      # activity. Re-enabling the workflow resets that clock and bumps its
+      # updated_at, so it is re-enabled once that is 45 days old: the weekly
+      # schedule then gets two chances before day 60 in case a run is skipped.
       - name: Keep schedule alive
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/prune-renders.yml/enable"
+          WORKFLOW: repos/${{ github.repository }}/actions/workflows/prune-renders.yml
+        run: |
+          updated=$(gh api "$WORKFLOW" --jq .updated_at)
+          age_days=$(( ( $(date +%s) - $(date -d "$updated" +%s) ) / 86400 ))
+          echo "Workflow last enabled or changed ${age_days} days ago"
+          if [ "$age_days" -ge 45 ]; then
+            gh api -X PUT "$WORKFLOW/enable"
+            echo "Re-enabled to reset the inactivity clock"
+          fi
 
       - name: Checkout code
         uses: actions/checkout@v6
